@@ -6,8 +6,8 @@ from datetime import datetime
 from PIL import Image
 
 THREAD_COUNT=8
-SRC_DIR = '/zfs/cornerstone/All_Images/'
-DST_DIR = '/tmp/dst'
+SRC_DIR = '/mnt/c/Users/Caroline/OneDrive/Pictures/CameraRoll/'
+DST_DIR = '/mnt/c/Users/Caroline/OneDrive/Pictures/sorted_images/'
 
 file_list = []
 for root, dirs, files in os.walk(SRC_DIR):
@@ -23,8 +23,8 @@ def sort_image(image_path):
     try:
         date_taken = Image.open(image_path)._getexif()[36867]
         dt= datetime.strptime(date_taken, '%Y:%m:%d %H:%M:%S')
-        new_name = '{}{}{}_{}{}{}{}'.format(dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second, os.path.splitext(image_path)[1])
-        new_path = os.path.join(DST_DIR, str(dt.year), str(dt.month))
+        new_name = '{}{}{}_{}{}{}{}'.format(dt.year.zfill(4), dt.month.zfill(2), dt.day.zfill(2), dt.hour.zfill(2), dt.minute.zfill(2), dt.second.zfill(2), os.path.splitext(image_path)[1])
+        new_path = os.path.join(DST_DIR, str(dt.year).zfill(4), str(dt.month).zfill(2))
         os.makedirs(new_path, exist_ok=True)
         shutil.copyfile(image_path, os.path.join(new_path, new_name))
         print('Sorted: {}'.format(image_path))
