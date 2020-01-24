@@ -6,7 +6,7 @@ from datetime import datetime
 from PIL import Image
 
 THREAD_COUNT=8
-SRC_DIR = '/mnt/c/Users/Caroline/OneDrive/Pictures/CameraRoll/'
+SRC_DIR = '/mnt/c/Users/Caroline/Pictures/'
 DST_DIR = '/mnt/c/Users/Caroline/OneDrive/Pictures/sorted_images/'
 
 file_list = []
@@ -23,7 +23,7 @@ def sort_image(image_path):
     try:
         date_taken = Image.open(image_path)._getexif()[36867]
         dt= datetime.strptime(date_taken, '%Y:%m:%d %H:%M:%S')
-        new_name = '{}{}{}_{}{}{}{}'.format(dt.year.zfill(4), dt.month.zfill(2), dt.day.zfill(2), dt.hour.zfill(2), dt.minute.zfill(2), dt.second.zfill(2), os.path.splitext(image_path)[1])
+        new_name = '{}{}{}_{}{}{}{}'.format(str(dt.year).zfill(4), str(dt.month).zfill(2), str(dt.day).zfill(2), str(dt.hour).zfill(2), str(dt.minute).zfill(2), str(dt.second).zfill(2), os.path.splitext(image_path)[1])
         new_path = os.path.join(DST_DIR, str(dt.year).zfill(4), str(dt.month).zfill(2))
         os.makedirs(new_path, exist_ok=True)
         shutil.copyfile(image_path, os.path.join(new_path, new_name))
