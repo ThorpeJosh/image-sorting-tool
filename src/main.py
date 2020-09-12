@@ -1,12 +1,13 @@
 import os
-import subprocess
 import threading
+import shutil
+import multiprocessing
+from datetime import datetime
 import tkinter as tk
 from tkinter import ttk
-from tkinter import messagebox
 from tkinter import filedialog
 from tkinter import scrolledtext
-from functools import partial
+from PIL import Image
 
 class GUI(tk.Tk):
     def __init__(self, *args, **kwargs):
@@ -125,6 +126,58 @@ class GUI(tk.Tk):
         else:
             self.start_button.config(state='disabled')
             self.find_button.config(state='disabled')
+
+
+class ImageSort:
+    def __init__(self, source_dir, destination_dir, tk_text_object):
+        self.source_dir = source_dir
+        self.destination_dir = destination_dir
+        self.tk_text_object = tk_text_object
+        self.threads_to_use = max(1, int(multiprocessing.cpu_count()/2))
+        self.manager = multiprocessing.Manager()
+        self.message_queue = self.manager.Queue()
+        threading.Thread(target=self.read_queue, daemon=True).start()
+
+    def find_images(self):
+        self.image_list = []
+        for root_path, __, files in os.walk(self.source_dir):
+            for file_name in files:
+                if file_name.lower().endswith(('.png', '.jpg', '.jpeg')):
+                    self.image_list.append(os.path.join(root_path, file_name))
+        self.tk_text_object.configure(state='normal')  # Make writable
+        self.tk_text_object.delete('1.0', tk.END)
+        self.tk_text_object.insert(tk.INSERT, "Found {} images in {} ..... press 'start' to begin sorting them\n".format(len(self.image_list), self.source_dir))
+        self.tk_text_object.configure(state='disabled')  # Read Only
+
+    @staticmethod
+    def sort_image(message_queue, destination_dir, source_image_path):
+        try:
+            date_taken = Image.open(source_image_path)._getexif()[36867]
+            dt= datetime.strptime(date_taken, '%Y:%m:%d %H:%M:%S')
+            new_name = '{}{}{}_{}{}{}{}'.format(str(dt.year).zfill(4), str(dt.month).zfill(2), str(dt.day).zfill(2), str(dt.hour).zfill(2), str(dt.minute).zfill(2), str(dt.second).zfill(2), os.path.splitext(source_image_path)[1])
+            new_path = os.path.join(destination_dir, str(dt.year).zfill(4), str(dt.month).zfill(2))
+            os.makedirs(new_path, exist_ok=True)
+            shutil.copyfile(source_image_path, os.path.join(new_path, new_name))
+            message_queue.put("Sorted: {}\n".format(source_image_path))
+        except Exception as error:
+            print('Error {}: {}'.format(error, source_image_path))
+            message_queue.put("Failed: {}\n".format(source_image_path))
+            new_path = os.path.join(destination_dir, 'failed_to_sort')
+            new_name = os.path.split(source_image_path)[1]
+            os.makedirs(new_path, exist_ok=True)
+            shutil.copyfile(source_image_path, os.path.join(new_path, new_name))
+
+    def run_parallel_sorting(self):
+        with multiprocessing.Pool(processes=self.threads_to_use) as pool:
+            input = [(self.message_queue, self.destination_dir, image) for image in self.image_list]
+            pool.starmap(self.sort_image, input)
+
+    def read_queue(self):
+        while True:
+            message = self.message_queue.get()
+            self.tk_text_object.configure(state='normal')  # Make writable
+            self.tk_text_object.insert(tk.INSERT, message)
+            self.tk_text_object.configure(state='disabled')  # Read Only
 
 
 if __name__ == "__main__":
