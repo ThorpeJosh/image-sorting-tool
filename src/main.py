@@ -17,6 +17,7 @@ class GUI(tk.Tk):
         self.init_vars()
         self.source_dir_var.trace("w", self.enable_buttons)
         self.destination_dir_var.trace("w", self.enable_buttons)
+        self.find_flag = False
 
     def init_vars(self):
         self.output_file = str()
@@ -80,6 +81,8 @@ class GUI(tk.Tk):
         self.sorting_tool = ImageSort(self.source_dir_var.get(), self.destination_dir_var.get(), self.scroll)
         self.sorting_tool.find_images()
         self.find_button.config(text='Finished Finding Images', state='normal')
+        self.find_flag = True
+        self.enable_buttons()
 
     def sort_images(self):
         self.start_button.config(text='Processing', state='disabled')
@@ -117,7 +120,7 @@ class GUI(tk.Tk):
             self.source_textbox.config(width=max(len(source_text), len(destination_text)))
             self.destination_textbox.config(width=max(len(source_text), len(destination_text)))
 
-        if source_text and destination_text: 
+        if source_text and destination_text and self.find_flag: 
             self.start_button.config(state='normal')
             self.find_button.config(state='normal')
         elif source_text:
