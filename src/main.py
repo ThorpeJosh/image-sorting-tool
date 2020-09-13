@@ -13,7 +13,6 @@ class GUI(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
         self.title("Image Sorting Tool")
-        #self.geometry('800x500')
         self.init_vars()
         self.source_dir_var.trace("w", self.enable_buttons)
         self.destination_dir_var.trace("w", self.enable_buttons)
@@ -24,14 +23,18 @@ class GUI(tk.Tk):
         self.source_dir_var = tk.StringVar()
         self.destination_dir_var = tk.StringVar()
         self.textbox_width = 100
-        self.scroll_width = 150
-        self.scroll_height = 50
+        self.scroll_width = 100
+        self.scroll_height = 40
 
     def draw_main(self):
         for widget in self.winfo_children():
             widget.destroy()
         #Main GUI has 3 columns
         no_col = 3
+
+        #Allow middle column to grow when window is resized
+        self.columnconfigure(1, weight=1, minsize=self.textbox_width*5)
+
         #First row
         title_label = ttk.Label(self, text='Image Sorting Tool - Maintained by Joshua Thorpe')
         title_label.grid(column=0, row=0, columnspan=no_col, pady=5)
@@ -44,32 +47,34 @@ class GUI(tk.Tk):
         #Source Directory Widgets
         ttk.Label(self, text="Source Directory").grid(column=0, row=2, padx=5, sticky='W')
         self.source_textbox = ttk.Entry(self, textvariable=self.source_dir_var, width=self.textbox_width)
-        self.source_textbox.grid(column=1, row=2, padx=5)
-        ttk.Button(self, text='Browse', command=lambda: self.get_directory(self.source_dir_var)).grid(column=2, row=2)
+        self.source_textbox.grid(column=1, row=2, sticky='EW')
+        ttk.Button(self, text='Browse', command=lambda: self.get_directory(self.source_dir_var)).grid(column=2, row=2, padx=5, sticky='E')
 
         #Output File Widgets
         ttk.Label(self, text="Destination Directory").grid(column=0, row=3, padx=5, sticky='W')
         self.destination_textbox = ttk.Entry(self, textvariable=self.destination_dir_var, width=self.textbox_width)
-        self.destination_textbox.grid(column=1, row=3, padx=5)
-        ttk.Button(self, text='Browse', command=lambda: self.get_directory(self.destination_dir_var)).grid(column=2, row=3)
+        self.destination_textbox.grid(column=1, row=3, sticky='EW')
+        ttk.Button(self, text='Browse', command=lambda: self.get_directory(self.destination_dir_var)).grid(column=2, row=3, padx=5, sticky='E')
 
         #Begin Button
         self.start_button = tk.Button(self, text='Start', command=self.sort_images)
-        self.start_button.grid(column=no_col-1, row=4, padx=5, pady=5, sticky='E')
+        self.start_button.grid(column=no_col-1, row=4, padx=5, pady=5, sticky='EW')
         self.start_button.config(state='disabled')
 
         #Find Images Button
         self.find_button = tk.Button(self, text='Find Images', command=self.find_images)
-        self.find_button.grid(column=no_col-2, row=4)
+        self.find_button.grid(column=no_col-2, row=4, padx=5, pady=5)
         self.find_button.config(state='disabled')
 
         #Quit Button
         quit_button = tk.Button(self, text='Quit', command=self._quit)
-        quit_button.grid(column=0, row=4, padx=5, pady=5, sticky='W')
+        quit_button.grid(column=0, row=4, padx=5, pady=5, sticky='EW')
 
         #Scrolled Text Widget
+        scroll_text_row = 5
         self.scroll = scrolledtext.ScrolledText(self, width=self.scroll_width, height=self.scroll_height, wrap=tk.WORD)
-        self.scroll.grid(column=0, row=5, columnspan=no_col)
+        self.scroll.grid(column=0, row=scroll_text_row, columnspan=no_col, padx=5, pady=(0,5), sticky='NSEW')
+        self.rowconfigure(scroll_text_row, weight=1)
         self.scroll.insert(tk.INSERT, 'Welcome, Enter a source and destination directory, then click "Find Images"')
         self.scroll.configure(state='disabled')  # Read Only
 
