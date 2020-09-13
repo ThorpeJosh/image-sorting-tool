@@ -3,7 +3,7 @@
 This is a simple python tool that will find all the images in a source directory (including sub-directories) and copy them into a structured destination.
 
 The date taken for each image will be extracted from the exif data and the image destination name will be by default in format 'yyyymmdd-HHMMSS'. For example '20201225-234532.jpg'
-The default output structure is for renamed images to be placed in year and month folders. For example:
+The default output structure is for sorted images to be placed in year and month folders. For example:
 
 /<br>
 ├── 2019/<br>
@@ -19,6 +19,25 @@ The default output structure is for renamed images to be placed in year and mont
 &ensp;&ensp;&ensp;&ensp;└── 03/<br>
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;└── 20200301-110330.jpg<br>
 
-All images that do not have EXIF data available will be copied to a 'failed' folder in the root directory of the above directory structure without any renaming.
+Images that do not have EXIF data available will be copied to a 'failed' folder in the root directory of the above directory structure without any renaming.
 
-This script is multithreaded to increase performance on high speed storage such as SSDs.
+This tool is multithreaded to increase performance on high speed storage such as SSDs.
+
+No data in the source directory is altered. It is only read from and then copy operations are performed during the sorting process.
+
+## Installation
+
+The tool can be run on Linux, MacOS and Windows provided the following requirements are met
+### Requirements
+* [Python 3](https://www.python.org/downloads/)
+* python3-tk (Comes with Python 3, but may need installing seperately in linux)
+* [PILLOW](https://pypi.org/project/Pillow/)
+
+## Usage
+From the root directory of this repository run
+```python
+python src/main.py
+```
+
+## Precompiled Downloads
+Coming soon ....
