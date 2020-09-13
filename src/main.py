@@ -89,7 +89,7 @@ class GUI(tk.Tk):
         self.after(100, self._sort_images)
 
     def _sort_images(self):
-        self.sorting_tool.run_parallel_sorting()
+        threading.Thread(target=self.sorting_tool.run_parallel_sorting, daemon=True).start()
         self.start_button.config(text='Finished Sorting!', state='normal')
 
     def _quit(self):
@@ -150,6 +150,7 @@ class ImageSort:
         self.tk_text_object.configure(state='normal')  # Make writable
         self.tk_text_object.delete('1.0', tk.END)
         self.tk_text_object.insert(tk.INSERT, "Found {} images in {} ..... press 'start' to begin sorting them\n".format(len(self.image_list), self.source_dir))
+        self.tk_text_object.yview(tk.END)
         self.tk_text_object.configure(state='disabled')  # Read Only
 
     @staticmethod
@@ -180,6 +181,7 @@ class ImageSort:
             message = self.message_queue.get()
             self.tk_text_object.configure(state='normal')  # Make writable
             self.tk_text_object.insert(tk.INSERT, message)
+            self.tk_text_object.yview(tk.END)
             self.tk_text_object.configure(state='disabled')  # Read Only
 
 
