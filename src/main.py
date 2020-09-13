@@ -166,8 +166,9 @@ class ImageSort:
             new_name = '{}{}{}_{}{}{}{}'.format(str(dt.year).zfill(4), str(dt.month).zfill(2), str(dt.day).zfill(2), str(dt.hour).zfill(2), str(dt.minute).zfill(2), str(dt.second).zfill(2), os.path.splitext(source_image_path)[1])
             new_path = os.path.join(destination_dir, str(dt.year).zfill(4), str(dt.month).zfill(2))
             os.makedirs(new_path, exist_ok=True)
-            shutil.copyfile(source_image_path, os.path.join(new_path, new_name))
-            message_queue.put("Sorted: {}\n".format(source_image_path))
+            image_destination_path = os.path.join(new_path, new_name)
+            shutil.copyfile(source_image_path, image_destination_path)
+            message_queue.put("Sorted: {} --> {}\n".format(source_image_path, image_destination_path))
         except Exception as error:
             print('Error {}: {}'.format(error, source_image_path))
             message_queue.put("Failed: {}\n".format(source_image_path))
