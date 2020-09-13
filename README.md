@@ -1,6 +1,6 @@
 # ImageSortingTool
 [![Build Status](http://jenkins.thorpe.engineering:8080/buildStatus/icon?job=ImageSortingTool%2Fmaster&subject=build%20status)](http://jenkins.thorpe.engineering:8080/job/ImageSortingTool/job/master/)  
-
+![Screenshot](https://github.com/ThorpeJosh/ImageSortingTool/blob/master/assets/ImageSortingTool.PNG?raw=true)
 This is a simple python tool that will find all the images in a source directory (including sub-directories) and copy them into a structured destination.
 
 The date taken for each image will be extracted from the exif data and the image destination name will be by default in format 'yyyymmdd-HHMMSS'. For example '20201225-234532.jpg'
