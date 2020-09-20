@@ -4,6 +4,7 @@ import os
 import shutil
 import multiprocessing
 import threading
+import time
 import tkinter as tk
 from datetime import datetime
 from PIL import Image
@@ -102,7 +103,15 @@ class ImageSort:
         """Method to receive and log the messages from the workers in the pool"""
         while True:
             message = self.message_queue.get()
+            if message == 'kill':
+                break
             self.tk_text_object.configure(state="normal")  # Make writable
             self.tk_text_object.insert(tk.INSERT, message)
             self.tk_text_object.yview(tk.END)
             self.tk_text_object.configure(state="disabled")  # Read Only
+
+    def cleanup(self):
+        """ Cleanup function that kills any threads spawned on instance creation
+        """
+        self.message_queue.put('kill')
+        time.sleep(0.2)

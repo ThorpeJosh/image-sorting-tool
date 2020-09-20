@@ -34,3 +34,5 @@ def test_find_images(tmp_path):
     src_assets.sort()
     sorter.image_list.sort()
     assert all([src == found for src, found in zip(src_assets, sorter.image_list)])
+    # Cleanup child threads
+    sorter.cleanup()
