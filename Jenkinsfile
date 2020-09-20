@@ -1,6 +1,6 @@
 pipeline {
     options {
-        timeout(time: 1, unit: 'MINUTES')
+        timeout(time: 2, unit: 'MINUTES')
         } 
     agent any
 
@@ -14,11 +14,20 @@ pipeline {
                 '''
             }
         }
-        stage('Lint RPi Code') {
+        stage('Linter') {
             steps {
                 sh '''
                 . venv/bin/activate
-                pylint src/*.py
+                pylint image_sorting_tool/*.py
+                pylint image_sorting_tool/tests/*.py
+                '''
+            }
+        }
+        stage('Unit Tests') {
+            steps {
+                sh '''
+                . venv/bin/activate
+                pytest
                 '''
             }
         }
