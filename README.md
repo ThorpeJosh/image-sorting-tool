@@ -37,7 +37,7 @@ The tool can be run on Linux, MacOS and Windows provided the following requireme
 ## Usage
 From the root directory of this repository run
 ```python
-python src/main.py
+python -m image_sorting_tool
 ```
 
 ## Precompiled Downloads
