@@ -1,6 +1,6 @@
 pipeline {
     options {
-        timeout(time: 1, unit: 'MINUTES')
+        timeout(time: 2, unit: 'MINUTES')
         } 
     agent any
 

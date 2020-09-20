@@ -15,6 +15,9 @@ TEST_ASSETS = [os.path.join(ASSETS_PATH, asset) for asset in os.listdir(ASSETS_P
 def test_find_images(tmp_path):
     """ Test that the tool can find the images in the test assets directory
     """
+    # Convert posix path to string for older python versions
+    tmp_path = str(tmp_path)
+
     # Copy test assets to a tmp_path
     src_assets = [shutil.copy2(asset, tmp_path) for asset in TEST_ASSETS]
 
@@ -28,4 +31,3 @@ def test_find_images(tmp_path):
     src_assets.sort()
     sorter.image_list.sort()
     assert all([src == found for src, found in zip(src_assets, sorter.image_list)])
-
