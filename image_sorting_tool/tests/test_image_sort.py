@@ -4,6 +4,9 @@ import os
 import sys
 import shutil
 
+# pylint: disable=wrong-import-position
+# pylint: disable=import-error
+
 tests_path = os.path.dirname(os.path.abspath(__file__))
 src_path = tests_path+'/../'
 sys.path.insert(0, src_path)

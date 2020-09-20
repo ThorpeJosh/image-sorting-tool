@@ -19,6 +19,7 @@ pipeline {
                 sh '''
                 . venv/bin/activate
                 pylint image_sorting_tool/*.py
+                pylint image_sorting_tool/tests/*.py
                 '''
             }
         }
