@@ -2,7 +2,7 @@
 based on their date taken.
 """
 import logging
-from gui import GUI
+from image_sorting_tool.gui import GUI
 
 
 # Create root logger

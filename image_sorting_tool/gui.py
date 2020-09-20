@@ -6,7 +6,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
 from tkinter import scrolledtext
-from image_sort import ImageSort
+from image_sorting_tool.image_sort import ImageSort
 
 
 class GUI(tk.Tk):
