@@ -40,5 +40,11 @@ From the root directory of this repository run
 python -m image_sorting_tool
 ```
 
+## Development
+To contribute, install the dev dependencies with
+```python
+pip install -e .[dev]
+```
+
 ## Precompiled Downloads
 Coming soon ....

@@ -16,8 +16,13 @@ stream_handler.setFormatter(logging.Formatter(LOG_FORMAT))
 stream_handler.setLevel(logging.DEBUG)
 logger.addHandler(stream_handler)
 
-if __name__ == "__main__":
+def run():
+    """Entry point of program
+    """
     logger.info('Entered Image Sorting Tool')
     root = GUI()
     root.draw_main()
     root.mainloop()
+
+if __name__ == "__main__":
+    run()
