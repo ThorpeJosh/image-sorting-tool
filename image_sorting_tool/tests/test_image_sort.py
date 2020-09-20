@@ -5,11 +5,11 @@ import sys
 import shutil
 
 tests_path = os.path.dirname(os.path.abspath(__file__))
-src_path = tests_path+'/../src/'
+src_path = tests_path+'/../'
 sys.path.insert(0, src_path)
 from image_sort import ImageSort
 
-ASSETS_PATH = tests_path+'/../assets/test_assets/'
+ASSETS_PATH = tests_path+'/../../assets/test_assets/'
 TEST_ASSETS = [os.path.join(ASSETS_PATH, asset) for asset in os.listdir(ASSETS_PATH)]
 
 def test_find_images(tmp_path):

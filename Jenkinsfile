@@ -14,11 +14,19 @@ pipeline {
                 '''
             }
         }
-        stage('Lint RPi Code') {
+        stage('Linter') {
             steps {
                 sh '''
                 . venv/bin/activate
                 pylint image_sorting_tool/*.py
+                '''
+            }
+        }
+        stage('Unit Tests') {
+            steps {
+                sh '''
+                . venv/bin/activate
+                pytest
                 '''
             }
         }
