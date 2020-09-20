@@ -1,5 +1,5 @@
 # Image Sorting Tool
-[![Build Status](http://jenkins.thorpe.engineering:8080/buildStatus/icon?job=ImageSortingTool%2Fmaster&subject=build%20status)](http://jenkins.thorpe.engineering:8080/job/ImageSortingTool/job/master/)  
+[![Build Status](http://jenkins.thorpe.engineering:8080/buildStatus/icon?job=image-sorting-tool%2Fmaster&subject=build%20status)](http://jenkins.thorpe.engineering:8080/job/ImageSortingTool/job/master/)  
 ![Screenshot](https://github.com/ThorpeJosh/ImageSortingTool/blob/master/assets/ImageSortingTool.PNG?raw=true)
 This is a simple python tool that will find all the images in a source directory (including sub-directories) and copy them into a structured destination.
 
