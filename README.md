@@ -29,7 +29,7 @@ No data in the source directory is altered. It is only read from and then copy o
 ## Installation
 The tool can be run on Linux, MacOS and Windows provided the following requirements are met
 ### Requirements
-* [Python 3](https://www.python.org/downloads/)
+* [Python 3.5](https://www.python.org/downloads/) or above
 * python3-tk (Comes with Python 3, but may need installing seperately in linux)
 
 Then simply install by running 
