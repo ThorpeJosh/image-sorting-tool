@@ -27,24 +27,24 @@ This tool is multithreaded to increase performance on high speed storage such as
 No data in the source directory is altered. It is only read from and then copy operations are performed during the sorting process.
 
 ## Installation
-
 The tool can be run on Linux, MacOS and Windows provided the following requirements are met
 ### Requirements
 * [Python 3](https://www.python.org/downloads/)
 * python3-tk (Comes with Python 3, but may need installing seperately in linux)
-* [PILLOW](https://pypi.org/project/Pillow/)
+
+Then simply install by running 
+```python
+pip install image-sorting-tool
+```
 
 ## Usage
-From the root directory of this repository run
+Then run the following to launch
 ```python
-python -m image_sorting_tool
+image-sorting-tool
 ```
 
 ## Development
 To contribute, install the dev dependencies with
 ```python
-pip install -e .[dev]
+pip install .[dev]
 ```
-
-## Precompiled Downloads
-Coming soon ....
