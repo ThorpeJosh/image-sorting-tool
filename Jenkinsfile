@@ -1,6 +1,6 @@
 pipeline {
     options {
-        timeout(time: 2, unit: 'MINUTES')
+        timeout(time: 10, unit: 'MINUTES')
         } 
     agent any
 
@@ -10,7 +10,7 @@ pipeline {
                 sh '''
                 virtualenv venv -p python3
                 . venv/bin/activate
-                pip install -r requirements.txt
+                pip install .[dev]
                 '''
             }
         }
@@ -27,7 +27,7 @@ pipeline {
             steps {
                 sh '''
                 . venv/bin/activate
-                pytest
+                tox
                 '''
             }
         }
