@@ -32,13 +32,13 @@ The tool can be run on Linux, MacOS and Windows provided the following requireme
 * [Python 3.5](https://www.python.org/downloads/) or above
 * python3-tk (Comes with Python 3, but may need installing seperately in linux)
 
-Then simply install by running 
+Install by running the following in a console
 ```python
 pip install image-sorting-tool
 ```
 
 ## Usage
-Then run the following to launch
+Run the following to launch
 ```python
 image-sorting-tool
 ```
