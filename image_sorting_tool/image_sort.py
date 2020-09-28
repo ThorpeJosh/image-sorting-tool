@@ -56,6 +56,8 @@ class ImageSort:
         If the date taken is not extracted then the image will be copied to
         destination_dir/failed_to_sort/ with the filename unchanged.
         """
+        destination_dir = os.path.abspath(destination_dir)
+        source_image_path = os.path.abspath(source_image_path)
         try:
             # pylint: disable=(protected-access) #This is the call to _getexif
             # pylint: disable=(broad-except)
