@@ -48,13 +48,13 @@ def test_sort_images(tmp_path):
     tmp_path = str(tmp_path)
 
     # Create tmp directories for the test
-    tmp_src = os.path.join(tmp_path, 'src/')
-    tmp_dst = os.path.join(tmp_path, 'dst/')
+    tmp_src = os.path.abspath(os.path.join(tmp_path, 'src/'))
+    tmp_dst = os.path.abspath(os.path.join(tmp_path, 'dst/'))
     os.mkdir(tmp_src)
     os.mkdir(tmp_dst)
 
     # Add the tmp directory to the ground truths
-    sorted_gt = [os.path.join(tmp_dst, gt_path) for gt_path in sorted_gt]
+    sorted_gt = [os.path.abspath(os.path.join(tmp_dst, gt_path)) for gt_path in sorted_gt]
 
     # Copy test assets to a tmp_path
     for asset in TEST_ASSETS:

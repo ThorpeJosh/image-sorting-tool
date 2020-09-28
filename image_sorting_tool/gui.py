@@ -137,6 +137,7 @@ following structure "yyyy/mm/yyyymmdd-HHMMSS.jpg"'
     def sort_images(self):
         """Wrapper for calling _sort_images after button state has changed.
         """
+        self.sorting_tool.destination_dir = self.destination_dir_var.get()
         self.start_button.config(text="Processing", state="disabled")
         self.after(100, self._sort_images)
 
