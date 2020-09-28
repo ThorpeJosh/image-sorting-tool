@@ -20,7 +20,7 @@ The default output structure is for sorted images to be placed in year and month
 &ensp;&ensp;&ensp;&ensp;└── 03/<br>
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;└── 20200301-110330.jpg<br>
 
-Images that do not have EXIF data available will be copied to a 'failed' folder in the root directory of the above directory structure without any renaming.
+Images that do not have EXIF data available will be copied to a 'failed_to_sort' folder in the root directory of the above directory structure without any renaming.
 
 This tool is multithreaded to increase performance on high speed storage such as SSDs.
 
