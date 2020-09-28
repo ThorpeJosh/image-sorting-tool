@@ -1,6 +1,7 @@
 """ Image sorting tool tkinter GUI module
 """
 import sys
+import logging
 import threading
 import tkinter as tk
 from tkinter import ttk
@@ -8,6 +9,7 @@ from tkinter import filedialog
 from tkinter import scrolledtext
 from image_sorting_tool.image_sort import ImageSort
 
+logger = logging.getLogger('root')
 
 class GUI(tk.Tk):
     """Tkinter GUI object"""
@@ -37,6 +39,8 @@ class GUI(tk.Tk):
         """Main window for GUI"""
         for widget in self.winfo_children():
             widget.destroy()
+
+        logger.debug("Drawing main window")
 
         # Main GUI has 3 columns
         no_col = 3
@@ -121,6 +125,7 @@ following structure "yyyy/mm/yyyymmdd-HHMMSS.jpg"'
 
     def find_images(self):
         """Wrapper to call _find_images after botton state has changed"""
+        logger.debug("Finding has been called from GUI")
         self.find_button.config(text="Processing", state="disabled")
         self.after(100, self._find_images)
 
@@ -137,6 +142,7 @@ following structure "yyyy/mm/yyyymmdd-HHMMSS.jpg"'
     def sort_images(self):
         """Wrapper for calling _sort_images after button state has changed.
         """
+        logger.debug("Sorting has been called from GUI")
         self.sorting_tool.destination_dir = self.destination_dir_var.get()
         self.start_button.config(text="Processing", state="disabled")
         self.after(100, self._sort_images)
@@ -152,6 +158,7 @@ following structure "yyyy/mm/yyyymmdd-HHMMSS.jpg"'
     def _quit(self):
         """Quit the program
         """
+        logger.debug("Quiting")
         self.quit()
         self.destroy()
         sys.exit()
@@ -173,6 +180,9 @@ following structure "yyyy/mm/yyyymmdd-HHMMSS.jpg"'
         # pylint: disable=(unused-argument) # Tkinter expects *args when running a trace
         source_text = self.source_dir_var.get()
         destination_text = self.destination_dir_var.get()
+
+        logger.debug("Trace on 'Entry' textboxes activated")
+        logger.debug("Src dir: %s - Dst dir: %s", source_text, destination_text)
 
         # Offset to account for non-uniform letter spacing
         offset = 0

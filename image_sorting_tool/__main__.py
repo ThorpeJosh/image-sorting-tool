@@ -19,7 +19,7 @@ logger.addHandler(stream_handler)
 def run():
     """Entry point of program
     """
-    logger.info('Entered Image Sorting Tool')
+    logger.info('Launching Image Sorting Tool')
     root = GUI()
     root.draw_main()
     root.mainloop()

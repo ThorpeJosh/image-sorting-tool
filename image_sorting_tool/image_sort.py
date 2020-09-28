@@ -2,12 +2,15 @@
 """
 import os
 import shutil
+import logging
 import multiprocessing
 import threading
 import time
 import tkinter as tk
 from datetime import datetime
 from PIL import Image
+
+logger = logging.getLogger('root')
 
 class ImageSort:
     """Image sorting tool"""
@@ -32,6 +35,7 @@ class ImageSort:
             for file_name in files:
                 if file_name.lower().endswith((".png", ".jpg", ".jpeg")):
                     self.image_list.append(os.path.join(root_path, file_name))
+        logger.info("Found %i images in %s", len(self.image_list), self.source_dir)
         if self.tk_text_object is not None:
             # Only run if a GUI object is provided
             self.tk_text_object.configure(state="normal")  # Make writable
@@ -82,7 +86,7 @@ class ImageSort:
                 "Sorted: {} --> {}\n".format(source_image_path, image_destination_path)
             )
         except Exception as error:
-            print("Error {}: {}".format(error, source_image_path))
+            logger.warning("Failed from: %s: %s", error, source_image_path)
             message_queue.put("Failed: {}\n".format(source_image_path))
             new_path = os.path.join(destination_dir, "failed_to_sort")
             new_name = os.path.split(source_image_path)[1]
@@ -115,5 +119,6 @@ class ImageSort:
     def cleanup(self):
         """ Cleanup function that kills any threads spawned on instance creation
         """
+        logger.debug("Running cleanup on queue thread")
         self.message_queue.put('kill')
         time.sleep(0.2)
