@@ -1,5 +1,7 @@
 # Image Sorting Tool
-[![Build Status](http://jenkins.thorpe.engineering:8080/buildStatus/icon?job=image-sorting-tool%2Fmaster&subject=build%20status)](http://jenkins.thorpe.engineering:8080/job/ImageSortingTool/job/master/)  
+[![Build Status](http://jenkins.thorpe.engineering:8080/buildStatus/icon?job=image-sorting-tool%2Fmaster&subject=build%20status)](http://jenkins.thorpe.engineering:8080/job/ImageSortingTool/job/master/)
+[![PyPI version](https://img.shields.io/pypi/v/image-sorting-tool.svg)](https://pypi.org/project/image-sorting-tool/)
+[![PyPI license](https://img.shields.io/pypi/l/image-sorting-tool.svg)](https://pypi.org/project/image-sorting-tool/)  
 ![Screenshot](https://github.com/ThorpeJosh/ImageSortingTool/blob/master/assets/ImageSortingTool.PNG?raw=true)
 This is a simple python tool that will find all the images in a source directory (including sub-directories) and copy them into a structured destination.
 
@@ -41,6 +43,17 @@ pip install image-sorting-tool
 Run the following to launch
 ```python
 image-sorting-tool
+```
+## Upgrading
+Run the following to upgrade
+```python
+pip install --upgrade image-sorting-tool
+```
+
+## Uninstalling
+Run the following to remove the tool from your machine
+```python
+pip uninstall image-sorting-tool
 ```
 
 ## Development
