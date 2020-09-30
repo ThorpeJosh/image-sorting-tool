@@ -2,6 +2,7 @@
 """
 import sys
 import logging
+import time
 import threading
 import tkinter as tk
 from tkinter import ttk
@@ -174,11 +175,28 @@ destination directory under an 'other_files' folder"
         threading.Thread(
             target=self.sorting_tool.run_parallel_sorting, daemon=True
         ).start()
+        threading.Thread(
+            target=self._reset_buttons, daemon=True
+        ).start()
+
+    def _reset_buttons(self):
+        """Waits for sorting process to finish and then reactivates the start button and prints
+        a message to the text window
+        """
+        while not self.sorting_tool.sorting_complete:
+            time.sleep(0.5)
+        # Sorting has finished, display message to GUI
         self.start_button.config(text="Finished Sorting!", state="normal")
+        self.find_button.config(state="normal")
+        self.scroll.configure(state="normal")  # Make writable
+        self.scroll.insert(tk.INSERT, "<<<<< SORTING FINISHED >>>>>")
+        self.scroll.yview(tk.END)
+        self.scroll.configure(state="disabled")  # Read Only
 
     def _quit(self):
         """Quit the program"""
         logger.debug("Quiting")
+        self.sorting_tool.cleanup()
         self.quit()
         self.destroy()
         sys.exit()
