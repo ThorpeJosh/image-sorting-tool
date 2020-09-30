@@ -28,6 +28,8 @@ class ImageSort:
         threading.Thread(target=self.read_queue, daemon=True).start()
         self.image_list = []
         self.other_list = []
+        self.copy_unsortable = False
+        self.sorting_complete = False
 
     def find_images(self):
         """The image finding function
@@ -135,12 +137,20 @@ you want them copied to the destination folder during sorting\n".format(
         The pool size is equal to half the number of available threads the machine has.
         SSD's benifit from multithreading while HDD's will generally be the bottleneck.
         """
+        self.sorting_complete = False
         with multiprocessing.Pool(processes=self.threads_to_use) as pool:
             inputs = [
                 (self.message_queue, self.destination_dir, image)
                 for image in self.image_list
             ]
             pool.starmap(self.sort_image, inputs)
+
+        # Run copy operation on unsortable files if requested
+        if self.copy_unsortable:
+            logger.info("Starting unsorted image copying stage")
+            self.run_parallel_copy()
+        self.sorting_complete = True
+        logger.info("Sorting Completed")
 
     @staticmethod
     def copy_file(message_queue, destination_dir, source_path):
@@ -155,7 +165,7 @@ you want them copied to the destination folder during sorting\n".format(
         shutil.copyfile(source_path, destination_path)
         logger.debug("Copied unsortable file %s --> %s", source_path, destination_path)
         message_queue.put(
-            "Copied unsortable file {} --> {}".format(source_path, destination_path)
+            "Copied unsortable file {} --> {}\n".format(source_path, destination_path)
         )
 
     def run_parallel_copy(self):

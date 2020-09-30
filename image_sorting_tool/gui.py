@@ -69,7 +69,7 @@ following structure "yyyy/mm/yyyymmdd-HHMMSS.jpg"'
         # Checkbox for copying unsortable files
         unsortable_checkbox_text = "Copy non-JPG files (videos, docs, .png, etc) to the \
 destination directory under an 'other_files' folder"
-        unsortable_checkbox = tk.Checkbutton(
+        unsortable_checkbox = ttk.Checkbutton(
             self,
             text=unsortable_checkbox_text,
             variable=self.copy_unsortable,
@@ -162,7 +162,11 @@ destination directory under an 'other_files' folder"
         """Wrapper for calling _sort_images after button state has changed."""
         logger.debug("Sorting has been called from GUI")
         self.sorting_tool.destination_dir = self.destination_dir_var.get()
+        if self.copy_unsortable.get():
+            logger.info("Copy unsortable has been selected")
+            self.sorting_tool.copy_unsortable = True
         self.start_button.config(text="Processing", state="disabled")
+        self.find_button.config(state="disabled")
         self.after(100, self._sort_images)
 
     def _sort_images(self):
