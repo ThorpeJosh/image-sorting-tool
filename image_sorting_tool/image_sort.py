@@ -8,6 +8,7 @@ import threading
 import time
 import tkinter as tk
 from datetime import datetime
+from dateutil import parser
 from PIL import Image
 
 logger = logging.getLogger('root')
@@ -65,8 +66,24 @@ class ImageSort:
         try:
             # pylint: disable=(protected-access) #This is the call to _getexif
             # pylint: disable=(broad-except)
-            date_taken = Image.open(source_image_path)._getexif()[36867]
-            dtime = datetime.strptime(date_taken, "%Y:%m:%d %H:%M:%S")
+            try:
+                # Try get datetime from exif
+                date_taken = Image.open(source_image_path)._getexif()[36867]
+                dtime = datetime.strptime(date_taken, "%Y:%m:%d %H:%M:%S")
+            except KeyError as date_taken_err:
+                # Exif failed, try filename instead
+                filename = os.path.split(source_image_path)[1]
+                valid_years = [str(year) for year in range(1990, 2100)]
+                in_years = [year in filename for year in valid_years]
+                if sum(in_years) == 0:
+                    raise ValueError("No year found in {}".format(filename)) from date_taken_err
+                # Extract only numbers from the filename
+                filename = os.path.splitext(filename)[0]
+                numbers = [letter for letter in filename if letter.isdigit()]
+                numbers = ''.join(numbers)
+                # Extract datetime from numbers
+                dtime = parser.parse(numbers)
+
             new_name = "{}{}{}_{}{}{}{}".format(
                 str(dtime.year).zfill(4),
                 str(dtime.month).zfill(2),
@@ -85,6 +102,7 @@ class ImageSort:
             message_queue.put(
                 "Sorted: {} --> {}\n".format(source_image_path, image_destination_path)
             )
+
         except Exception as error:
             logger.warning("Failed from: %s: %s", error, source_image_path)
             message_queue.put("Failed: {}\n".format(source_image_path))
