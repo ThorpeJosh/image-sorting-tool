@@ -195,8 +195,11 @@ destination directory under an 'other_files' folder"
 
     def _quit(self):
         """Quit the program"""
-        logger.debug("Quiting")
-        self.sorting_tool.cleanup()
+        logger.info("Quiting Image Sorting Tool")
+        try:
+            self.sorting_tool.cleanup()
+        except AttributeError:
+            pass
         self.quit()
         self.destroy()
         sys.exit()
