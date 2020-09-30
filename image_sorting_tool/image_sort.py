@@ -33,7 +33,7 @@ class ImageSort:
         self.image_list = []
         for root_path, __, files in os.walk(self.source_dir):
             for file_name in files:
-                if file_name.lower().endswith((".png", ".jpg", ".jpeg")):
+                if file_name.lower().endswith((".jpg", ".jpeg")):
                     self.image_list.append(os.path.join(root_path, file_name))
         logger.info("Found %i images in %s", len(self.image_list), self.source_dir)
         if self.tk_text_object is not None:
