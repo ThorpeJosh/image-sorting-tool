@@ -9,10 +9,12 @@ from tkinter import filedialog
 from tkinter import scrolledtext
 from image_sorting_tool.image_sort import ImageSort
 
-logger = logging.getLogger('root')
+logger = logging.getLogger("root")
+
 
 class GUI(tk.Tk):
     """Tkinter GUI object"""
+
     # pylint: disable=(too-many-instance-attributes)
     # pylint: disable=(attribute-defined-outside-init)
     # pylint does not play well with tkinter, often thinking variables are declared
@@ -30,6 +32,7 @@ class GUI(tk.Tk):
         """Method called during __init__ that initialises some user variables and parameters"""
         self.source_dir_var = tk.StringVar()
         self.destination_dir_var = tk.StringVar()
+        self.copy_unsortable = tk.IntVar()
         self.textbox_width = 100
         self.scroll_width = 100
         self.scroll_height = 40
@@ -63,48 +66,64 @@ following structure "yyyy/mm/yyyymmdd-HHMMSS.jpg"'
         description_message = tk.Message(self, text=message, width=1000)
         description_message.grid(column=0, row=1, columnspan=no_col, pady=5)
 
+        # Checkbox for copying unsortable files
+        unsortable_checkbox_text = "Copy non-JPG files (videos, docs, .png, etc) to the \
+destination directory under an 'other_files' folder"
+        unsortable_checkbox = tk.Checkbutton(
+            self,
+            text=unsortable_checkbox_text,
+            variable=self.copy_unsortable,
+            state="normal",
+        )
+        unsortable_checkbox.grid(column=1, row=2, sticky="W")
+
         # Source Directory Widgets
+        source_dir_row = 3
         ttk.Label(self, text="Source Directory").grid(
-            column=0, row=2, padx=5, sticky="W"
+            column=0, row=source_dir_row, padx=5, sticky="W"
         )
         self.source_textbox = ttk.Entry(
             self, textvariable=self.source_dir_var, width=self.textbox_width
         )
-        self.source_textbox.grid(column=1, row=2, sticky="EW")
+        self.source_textbox.grid(column=1, row=source_dir_row, sticky="EW")
         ttk.Button(
             self, text="Browse", command=lambda: self.get_directory(self.source_dir_var)
-        ).grid(column=2, row=2, padx=5, sticky="E")
+        ).grid(column=2, row=source_dir_row, padx=5, sticky="E")
 
         # Output File Widgets
+        description_dir_row = 4
         ttk.Label(self, text="Destination Directory").grid(
-            column=0, row=3, padx=5, sticky="W"
+            column=0, row=description_dir_row, padx=5, sticky="W"
         )
         self.destination_textbox = ttk.Entry(
             self, textvariable=self.destination_dir_var, width=self.textbox_width
         )
-        self.destination_textbox.grid(column=1, row=3, sticky="EW")
+        self.destination_textbox.grid(column=1, row=description_dir_row, sticky="EW")
         ttk.Button(
             self,
             text="Browse",
             command=lambda: self.get_directory(self.destination_dir_var),
-        ).grid(column=2, row=3, padx=5, sticky="E")
+        ).grid(column=2, row=description_dir_row, padx=5, sticky="E")
 
+        button_row = 5
         # Begin Button
         self.start_button = tk.Button(self, text="Start", command=self.sort_images)
-        self.start_button.grid(column=no_col - 1, row=4, padx=5, pady=5, sticky="EW")
+        self.start_button.grid(
+            column=no_col - 1, row=button_row, padx=5, pady=5, sticky="EW"
+        )
         self.start_button.config(state="disabled")
 
         # Find Images Button
         self.find_button = tk.Button(self, text="Find Images", command=self.find_images)
-        self.find_button.grid(column=no_col - 2, row=4, padx=5, pady=5)
+        self.find_button.grid(column=no_col - 2, row=button_row, padx=5, pady=5)
         self.find_button.config(state="disabled")
 
         # Quit Button
         quit_button = tk.Button(self, text="Quit", command=self._quit)
-        quit_button.grid(column=0, row=4, padx=5, pady=5, sticky="EW")
+        quit_button.grid(column=0, row=button_row, padx=5, pady=5, sticky="EW")
 
         # Scrolled Text Widget
-        scroll_text_row = 5
+        scroll_text_row = 6
         self.scroll = scrolledtext.ScrolledText(
             self, width=self.scroll_width, height=self.scroll_height, wrap=tk.WORD
         )
@@ -140,24 +159,21 @@ following structure "yyyy/mm/yyyymmdd-HHMMSS.jpg"'
         self.enable_buttons()
 
     def sort_images(self):
-        """Wrapper for calling _sort_images after button state has changed.
-        """
+        """Wrapper for calling _sort_images after button state has changed."""
         logger.debug("Sorting has been called from GUI")
         self.sorting_tool.destination_dir = self.destination_dir_var.get()
         self.start_button.config(text="Processing", state="disabled")
         self.after(100, self._sort_images)
 
     def _sort_images(self):
-        """Run the image sorting tool in a seperate thread so the GUI will continue functioning
-        """
+        """Run the image sorting tool in a seperate thread so the GUI will continue functioning"""
         threading.Thread(
             target=self.sorting_tool.run_parallel_sorting, daemon=True
         ).start()
         self.start_button.config(text="Finished Sorting!", state="normal")
 
     def _quit(self):
-        """Quit the program
-        """
+        """Quit the program"""
         logger.debug("Quiting")
         self.quit()
         self.destroy()
@@ -188,8 +204,8 @@ following structure "yyyy/mm/yyyymmdd-HHMMSS.jpg"'
         offset = 0
 
         if (
-                len(source_text) > self.textbox_width + offset
-                or len(destination_text) > self.textbox_width + offset
+            len(source_text) > self.textbox_width + offset
+            or len(destination_text) > self.textbox_width + offset
         ):
             self.source_textbox.config(
                 width=max(len(source_text), len(destination_text))
