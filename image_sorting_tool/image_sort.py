@@ -55,7 +55,8 @@ class ImageSort:
             self.tk_text_object.delete("1.0", tk.END)
             self.tk_text_object.insert(
                 tk.INSERT,
-                "Found {} sortable images/videos in {} ..... press 'start' to begin sorting them\n".format(
+                "Found {} sortable images/videos in {} ..... press 'start' to \
+begin sorting them\n".format(
                     len(self.sort_list), self.source_dir
                 ),
             )
