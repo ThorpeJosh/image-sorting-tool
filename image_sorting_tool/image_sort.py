@@ -26,26 +26,26 @@ class ImageSort:
         self.manager = multiprocessing.Manager()
         self.message_queue = self.manager.Queue()
         threading.Thread(target=self.read_queue, daemon=True).start()
-        self.image_list = []
+        self.sort_list = []
         self.other_list = []
         self.copy_unsortable = False
         self.sorting_complete = False
 
     def find_images(self):
         """The image finding function
-        Searches for all .jpg and .png in the source directory, including all subfolders
+        Searches for all .jpg and .mp4 in the source directory, including all subfolders
         Returns a log message of the number of images found as well as storing the paths for later.
         """
-        self.image_list = []
+        self.sort_list = []
         for root_path, __, files in os.walk(self.source_dir):
             for file_name in files:
-                if file_name.lower().endswith((".jpg", ".jpeg")):
-                    # JPGs only for sorting
-                    self.image_list.append(os.path.join(root_path, file_name))
+                if file_name.lower().endswith((".jpg", ".jpeg", ".mp4", ".gif")):
+                    # JPGs and MP4 only for sorting
+                    self.sort_list.append(os.path.join(root_path, file_name))
                 else:
                     # Other files for a copy operation
                     self.other_list.append(os.path.join(root_path, file_name))
-        logger.info("Found %i JPGs in %s", len(self.image_list), self.source_dir)
+        logger.info("Found %i sortable files in %s", len(self.sort_list), self.source_dir)
         logger.info(
             "Found %i unsortable files in %s", len(self.other_list), self.source_dir
         )
@@ -55,8 +55,9 @@ class ImageSort:
             self.tk_text_object.delete("1.0", tk.END)
             self.tk_text_object.insert(
                 tk.INSERT,
-                "Found {} images in {} ..... press 'start' to begin sorting them\n".format(
-                    len(self.image_list), self.source_dir
+                "Found {} sortable images/videos in {} ..... press 'start' to \
+begin sorting them\n".format(
+                    len(self.sort_list), self.source_dir
                 ),
             )
             self.tk_text_object.insert(
@@ -86,6 +87,9 @@ you want them copied to the destination folder during sorting\n".format(
             # pylint: disable=(protected-access) #This is the call to _getexif
             # pylint: disable=(broad-except)
             try:
+                if source_image_path.lower().endswith((".mp4", ".gif")):
+                    # Skip straight to filename datetime extraction
+                    raise KeyError
                 # Try get datetime from exif
                 date_taken = Image.open(source_image_path)._getexif()[36867]
                 dtime = datetime.strptime(date_taken, "%Y:%m:%d %H:%M:%S")
@@ -141,7 +145,7 @@ you want them copied to the destination folder during sorting\n".format(
         with multiprocessing.Pool(processes=self.threads_to_use) as pool:
             inputs = [
                 (self.message_queue, self.destination_dir, image)
-                for image in self.image_list
+                for image in self.sort_list
             ]
             pool.starmap(self.sort_image, inputs)
 

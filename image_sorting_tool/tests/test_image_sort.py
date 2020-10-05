@@ -32,12 +32,12 @@ def test_find_images(tmp_path):
     src_assets = [asset for asset in src_assets if asset.lower().endswith((".jpg", ".jpeg"))]
 
     # Ensure finder found right number of images
-    assert len(src_assets) == len(sorter.image_list)
+    assert len(src_assets) == len(sorter.sort_list)
 
     # Sort found images and compare to to the source list to ensure it is identical
     src_assets.sort()
-    sorter.image_list.sort()
-    assert all([src == found for src, found in zip(src_assets, sorter.image_list)])
+    sorter.sort_list.sort()
+    assert all([src == found for src, found in zip(src_assets, sorter.sort_list)])
     # Cleanup child threads
     sorter.cleanup()
 
