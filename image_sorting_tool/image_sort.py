@@ -57,14 +57,14 @@ class ImageSort:
             self.tk_text_object.delete("1.0", tk.END)
             self.tk_text_object.insert(
                 tk.INSERT,
-                "Found {} sortable images/videos in {} ..... press 'start' to \
+                "Found {} images/videos meeting the above criteria in {} ..... press 'start' to \
 begin sorting them\n".format(
                     len(self.sort_list), self.source_dir
                 ),
             )
             self.tk_text_object.insert(
                 tk.INSERT,
-                "Found {} unsortable files (videos, docs, etc) tick the box above if \
+                "Found {} files that won't be sorted (videos, docs, etc), tick the box above if \
 you want them copied to the destination folder during sorting\n".format(
                     len(self.other_list)
                 ),
