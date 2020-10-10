@@ -9,6 +9,7 @@ from tkinter import ttk
 from tkinter import filedialog
 from tkinter import scrolledtext
 from image_sorting_tool.image_sort import ImageSort
+from image_sorting_tool.image_sort import JPEG_EXTENSIONS
 
 logger = logging.getLogger("root")
 
@@ -33,15 +34,16 @@ class GUI(tk.Tk):
         """Method called during __init__ that initialises some user variables and parameters"""
         self.source_dir_var = tk.StringVar()
         self.destination_dir_var = tk.StringVar()
-        self.copy_unsortable = tk.IntVar()
         self.jpeg_sort = tk.IntVar(value=1) # Preselect the JPEG option
         self.png_sort = tk.IntVar()
         self.gif_sort = tk.IntVar()
         self.mp4_sort = tk.IntVar()
+        self.copy_other_files = tk.IntVar()
         self.textbox_width = 100
         self.scroll_width = 100
         self.scroll_height = 40
         self.find_flag = False  # True if the image finding function has run.
+        self.ext_to_sort = []
 
     def draw_main(self):
         """Main window for GUI"""
@@ -124,7 +126,7 @@ destination directory under an 'other_files' folder"
         unsortable_checkbox = ttk.Checkbutton(
             options_frame,
             text=unsortable_checkbox_text,
-            variable=self.copy_unsortable,
+            variable=self.copy_other_files,
             state="normal",
         )
         unsortable_checkbox.pack(anchor="w")
@@ -191,9 +193,23 @@ destination directory under an 'other_files' folder"
         )
         self.scroll.configure(state="disabled")  # Read Only
 
+    def get_extensions_to_sort(self):
+        """ Checks the state of all the file type checkboxes and updates the list accordingly"""
+        self.ext_to_sort = []
+        if self.jpeg_sort.get():
+            self.ext_to_sort.extend(JPEG_EXTENSIONS)
+        if self.png_sort.get():
+            self.ext_to_sort.append(".png")
+        if self.gif_sort.get():
+            self.ext_to_sort.append(".gif")
+        if self.mp4_sort.get():
+            self.ext_to_sort.append(".mp4")
+        logger.debug("Extensions to sort: %s", self.ext_to_sort)
+
     def find_images(self):
         """Wrapper to call _find_images after botton state has changed"""
         logger.debug("Finding has been called from GUI")
+        self.get_extensions_to_sort()
         self.find_button.config(text="Processing", state="disabled")
         self.after(100, self._find_images)
 
@@ -202,6 +218,7 @@ destination directory under an 'other_files' folder"
         self.sorting_tool = ImageSort(
             self.source_dir_var.get(), self.destination_dir_var.get(), self.scroll
         )
+        self.sorting_tool.ext_to_sort = self.ext_to_sort
         self.sorting_tool.find_images()
         self.find_button.config(text="Finished Finding Images", state="normal")
         self.find_flag = True
@@ -211,9 +228,11 @@ destination directory under an 'other_files' folder"
         """Wrapper for calling _sort_images after button state has changed."""
         logger.debug("Sorting has been called from GUI")
         self.sorting_tool.destination_dir = self.destination_dir_var.get()
-        if self.copy_unsortable.get():
-            logger.info("Copy unsortable has been selected")
-            self.sorting_tool.copy_unsortable = True
+        self.get_extensions_to_sort()
+        self.sorting_tool.ext_to_sort = self.ext_to_sort
+        if self.copy_other_files.get():
+            logger.info("Copy 'other files' has been selected")
+            self.sorting_tool.copy_unsorted = True
         self.start_button.config(text="Processing", state="disabled")
         self.find_button.config(state="disabled")
         self.after(100, self._sort_images)
@@ -232,7 +251,7 @@ destination directory under an 'other_files' folder"
         a message to the text window
         """
         while not self.sorting_tool.sorting_complete:
-            time.sleep(0.5)
+            time.sleep(1)
         # Sorting has finished, display message to GUI
         self.start_button.config(text="Finished Sorting!", state="normal")
         self.find_button.config(state="normal")
