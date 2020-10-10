@@ -73,8 +73,8 @@ class GUI(tk.Tk):
 
         # Second row
         message = (
-            "Source directory: Directory which to search recursively for .jpg files \n"
-            + 'Destination directory: Directory to place the sorted images into in the \
+            "Source directory: Directory which to search recursively for files \n"
+            + 'Destination directory: Directory to place the sorted files into, with the \
 following structure "yyyy/mm/yyyymmdd-HHMMSS.jpg"'
         )
         description_message = tk.Message(self, text=message, width=1000)
