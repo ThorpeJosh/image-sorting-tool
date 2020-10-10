@@ -158,7 +158,7 @@ destination directory under an 'other_files' folder"
         ).grid(column=2, row=description_dir_row, padx=5, sticky="E")
 
         # Begin Button
-        self.start_button = tk.Button(self, text="Start", command=self.sort_images)
+        self.start_button = ttk.Button(self, text="Start", command=self.sort_images)
         self.start_button.grid(
             column=no_col - 1, row=button_row, padx=5, pady=5, sticky="EW"
         )
@@ -170,7 +170,7 @@ destination directory under an 'other_files' folder"
         self.find_button.config(state="disabled")
 
         # Quit Button
-        quit_button = tk.Button(self, text="Quit", command=self._quit)
+        quit_button = ttk.Button(self, text="Quit", command=self._quit)
         quit_button.grid(column=0, row=button_row, padx=5, pady=5, sticky="EW")
 
         # Scrolled Text Widget
