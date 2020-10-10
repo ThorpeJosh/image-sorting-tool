@@ -64,8 +64,9 @@ begin sorting them\n".format(
             )
             self.tk_text_object.insert(
                 tk.INSERT,
-                "Found {} files that won't be sorted (videos, docs, etc), tick the box above if \
-you want them copied to the destination folder during sorting\n".format(
+                "Found {} files that won't be sorted (videos, docs, etc), tick the "
+                "'Copy all other files' box above if you want them copied to the destination "
+                "folder during sorting\n".format(
                     len(self.other_list)
                 ),
             )
