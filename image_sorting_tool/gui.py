@@ -34,6 +34,10 @@ class GUI(tk.Tk):
         self.source_dir_var = tk.StringVar()
         self.destination_dir_var = tk.StringVar()
         self.copy_unsortable = tk.IntVar()
+        self.jpeg_sort = tk.IntVar(value=1) # Preselect the JPEG option
+        self.png_sort = tk.IntVar()
+        self.gif_sort = tk.IntVar()
+        self.mp4_sort = tk.IntVar()
         self.textbox_width = 100
         self.scroll_width = 100
         self.scroll_height = 40
@@ -41,6 +45,9 @@ class GUI(tk.Tk):
 
     def draw_main(self):
         """Main window for GUI"""
+        # pylint: disable=too-many-locals
+
+        # Clear all widgets from root window
         for widget in self.winfo_children():
             widget.destroy()
 
@@ -48,6 +55,10 @@ class GUI(tk.Tk):
 
         # Main GUI has 3 columns
         no_col = 3
+        file_options_row = 2
+        source_dir_row = 3
+        description_dir_row = 4
+        button_row = 5
 
         # Allow middle column to grow when window is resized
         self.columnconfigure(1, weight=1, minsize=self.textbox_width * 5)
@@ -67,19 +78,58 @@ following structure "yyyy/mm/yyyymmdd-HHMMSS.jpg"'
         description_message = tk.Message(self, text=message, width=1000)
         description_message.grid(column=0, row=1, columnspan=no_col, pady=5)
 
+        # Filetype options frame
+        options_frame = ttk.LabelFrame(self, text="File types to sort:")
+        options_frame.grid(column=1, row=file_options_row, sticky="EW")
+
+        # Checkbox for JPEG
+        jpeg_checkbox = ttk.Checkbutton(
+            options_frame,
+            text="JPG, JPEG: Common format for images captured by camera",
+            variable=self.jpeg_sort,
+            state="normal",
+        )
+        jpeg_checkbox.pack(anchor="w")
+
+        # Checkbox for PNG
+        png_checkbox = ttk.Checkbutton(
+            options_frame,
+            text="PNG: Commonly used for screenshots or graphic images from internet",
+            variable=self.png_sort,
+            state="normal",
+        )
+        png_checkbox.pack(anchor="w")
+
+        # Checkbox for GIF
+        gif_checkbox = ttk.Checkbutton(
+            options_frame,
+            text='GIF: Animated pictures from internet or moving pictures taken with phone',
+            variable=self.gif_sort,
+            state="normal",
+        )
+        gif_checkbox.pack(anchor="w")
+
+        # Checkbox for GIF
+        mp4_checkbox = ttk.Checkbutton(
+            options_frame,
+            text='MP4: Common video format for phones and cameras',
+            variable=self.mp4_sort,
+            state="normal",
+        )
+        mp4_checkbox.pack(anchor="w")
+
         # Checkbox for copying unsortable files
-        unsortable_checkbox_text = "Copy non-JPG files (videos, docs, .png, etc) to the \
+        unsortable_checkbox_text = "Copy all other files (including docs, binaries, etc) to the \
 destination directory under an 'other_files' folder"
         unsortable_checkbox = ttk.Checkbutton(
-            self,
+            options_frame,
             text=unsortable_checkbox_text,
             variable=self.copy_unsortable,
             state="normal",
         )
-        unsortable_checkbox.grid(column=1, row=2, sticky="W")
+        unsortable_checkbox.pack(anchor="w")
 
         # Source Directory Widgets
-        source_dir_row = 3
         ttk.Label(self, text="Source Directory").grid(
             column=0, row=source_dir_row, padx=5, sticky="W"
         )
@@ -92,7 +142,6 @@ destination directory under an 'other_files' folder"
         ).grid(column=2, row=source_dir_row, padx=5, sticky="E")
 
         # Output File Widgets
-        description_dir_row = 4
         ttk.Label(self, text="Destination Directory").grid(
             column=0, row=description_dir_row, padx=5, sticky="W"
         )
@@ -106,7 +155,6 @@ destination directory under an 'other_files' folder"
             command=lambda: self.get_directory(self.destination_dir_var),
         ).grid(column=2, row=description_dir_row, padx=5, sticky="E")
 
-        button_row = 5
         # Begin Button
         self.start_button = tk.Button(self, text="Start", command=self.sort_images)
         self.start_button.grid(
@@ -115,7 +163,7 @@ destination directory under an 'other_files' folder"
         self.start_button.config(state="disabled")
 
         # Find Images Button
-        self.find_button = tk.Button(self, text="Find Images", command=self.find_images)
+        self.find_button = ttk.Button(self, text="Find Images", command=self.find_images)
         self.find_button.grid(column=no_col - 2, row=button_row, padx=5, pady=5)
         self.find_button.config(state="disabled")
 
