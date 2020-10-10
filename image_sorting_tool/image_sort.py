@@ -11,6 +11,8 @@ from datetime import datetime
 from dateutil import parser
 from PIL import Image
 
+JPEG_EXTENSIONS = [".jpg", ".jpeg", ".jif", ".jpe", ".jfif", ".jfi", ".jp2", ".jpx"]
+
 logger = logging.getLogger("root")
 
 
@@ -28,7 +30,8 @@ class ImageSort:
         threading.Thread(target=self.read_queue, daemon=True).start()
         self.sort_list = []
         self.other_list = []
-        self.copy_unsortable = False
+        self.ext_to_sort = []
+        self.copy_unsorted = False
         self.sorting_complete = False
 
     def find_images(self):
@@ -39,8 +42,7 @@ class ImageSort:
         self.sort_list = []
         for root_path, __, files in os.walk(self.source_dir):
             for file_name in files:
-                if file_name.lower().endswith((".jpg", ".jpeg", ".mp4", ".gif")):
-                    # JPGs and MP4 only for sorting
+                if file_name.lower().endswith(tuple(self.ext_to_sort)):
                     self.sort_list.append(os.path.join(root_path, file_name))
                 else:
                     # Other files for a copy operation
@@ -71,6 +73,36 @@ you want them copied to the destination folder during sorting\n".format(
             self.tk_text_object.configure(state="disabled")  # Read Only
 
     @staticmethod
+    def get_datetime_from_exif(filepath):
+        """Attempt to get the datetime an image was taken from the EXIF data"""
+        # pylint: disable=(protected-access) #This is the call to _getexif
+        # pylint: disable=(broad-except)
+        try:
+            date_taken = Image.open(filepath)._getexif()[36867]
+            dtime = datetime.strptime(date_taken, "%Y:%m:%d %H:%M:%S")
+            return dtime
+        except Exception:
+            # Reading from exif failed, try filename instead
+            return ImageSort.get_datetime_from_filename(filepath)
+
+    @staticmethod
+    def get_datetime_from_filename(filepath):
+        """Attempt to get the datetime of a file from it's filename"""
+        filename = os.path.split(filepath)[1]
+        # See if the years from 1970-2099 exist in the filename
+        valid_years = [str(year) for year in range(1970, 2100)]
+        in_years = [year in filename for year in valid_years]
+        if sum(in_years) == 0:
+            raise ValueError("No year found in {}".format(filename))
+        # Extract only numbers from the filename
+        filename = os.path.splitext(filename)[0]
+        numbers = [char for char in filename if char.isdigit()]
+        numbers = "".join(numbers)
+        # Extract datetime from numbers
+        dtime = parser.parse(numbers)
+        return dtime
+
+    @staticmethod
     def sort_image(message_queue, destination_dir, source_image_path):
         """Image sorting method that sorts a single image.
         The image is opened and the date taken is attempted to be read from the EXIF data.
@@ -81,33 +113,15 @@ you want them copied to the destination folder during sorting\n".format(
         If the date taken is not extracted then the image will be copied to
         destination_dir/failed_to_sort/ with the filename unchanged.
         """
+        # pylint: disable=(broad-except)
         destination_dir = os.path.abspath(destination_dir)
         source_image_path = os.path.abspath(source_image_path)
         try:
-            # pylint: disable=(protected-access) #This is the call to _getexif
-            # pylint: disable=(broad-except)
-            try:
-                if source_image_path.lower().endswith((".mp4", ".gif")):
-                    # Skip straight to filename datetime extraction
-                    raise KeyError
-                # Try get datetime from exif
-                date_taken = Image.open(source_image_path)._getexif()[36867]
-                dtime = datetime.strptime(date_taken, "%Y:%m:%d %H:%M:%S")
-            except KeyError as date_taken_err:
-                # Exif failed, try filename instead
-                filename = os.path.split(source_image_path)[1]
-                valid_years = [str(year) for year in range(1990, 2100)]
-                in_years = [year in filename for year in valid_years]
-                if sum(in_years) == 0:
-                    raise ValueError(
-                        "No year found in {}".format(filename)
-                    ) from date_taken_err
-                # Extract only numbers from the filename
-                filename = os.path.splitext(filename)[0]
-                numbers = [letter for letter in filename if letter.isdigit()]
-                numbers = "".join(numbers)
-                # Extract datetime from numbers
-                dtime = parser.parse(numbers)
+            if source_image_path.lower().endswith(tuple(JPEG_EXTENSIONS)):
+                # File is JPEG so try extract datetime from EXIF
+                dtime = ImageSort.get_datetime_from_exif(source_image_path)
+            else:
+                dtime = ImageSort.get_datetime_from_filename(source_image_path)
 
             new_name = "{}{}{}_{}{}{}{}".format(
                 str(dtime.year).zfill(4),
@@ -150,7 +164,7 @@ you want them copied to the destination folder during sorting\n".format(
             pool.starmap(self.sort_image, inputs)
 
         # Run copy operation on unsortable files if requested
-        if self.copy_unsortable:
+        if self.copy_unsorted:
             logger.info("Starting unsorted image copying stage")
             self.run_parallel_copy()
         self.sorting_complete = True
