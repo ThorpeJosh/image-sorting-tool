@@ -3,10 +3,10 @@
 [![PyPI version](https://img.shields.io/pypi/v/image-sorting-tool.svg)](https://pypi.org/project/image-sorting-tool/)
 [![PyPI license](https://img.shields.io/pypi/l/image-sorting-tool.svg)](https://pypi.org/project/image-sorting-tool/)  
 ![Screenshot](https://github.com/ThorpeJosh/ImageSortingTool/blob/master/assets/ImageSortingTool.PNG?raw=true)
-This is a simple python tool that will find all the images in a source directory (including sub-directories) and copy them into a structured destination.
+This is a simple graphical tool to sort media into a scructured folder. It is designed primarily for JPG images taken with a camera/phone but will also work with MP4, PNG and GIF media files. It works by finding all files in a chosen source directory (including sub-directories) and then based on the chosen sorting options, copies them into a structured destination.
 
-The date taken for each image will be extracted from the exif data and the image destination name will be by default in format 'yyyymmdd-HHMMSS'. For example '20201225-234532.jpg'
-The default output structure is for sorted images to be placed in year and month folders. For example:
+The date taken for JPG files will be extracted from the EXIF data and for all other file formats the filename will be used to extract the date taken. The files destination name will be in format 'yyyymmdd-HHMMSS'. For example '20201225-234532.jpg'
+The default output structure is year and month folders. For example:
 
 /<br>
 ├── 2019/<br>
@@ -22,7 +22,9 @@ The default output structure is for sorted images to be placed in year and month
 &ensp;&ensp;&ensp;&ensp;└── 03/<br>
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;└── 20200301-110330.jpg<br>
 
-Images that do not have EXIF data available will be copied to a 'failed_to_sort' folder in the root directory of the above directory structure without any renaming.
+Files that cannot have the date taken extracted (missing EXIF or bad filenames) will be copied to a 'failed_to_sort' folder in the root directory of the above structure without any renaming. These files are commonly ones downloaded from the internet or shared through social media.
+
+If your source folder has other files such as binaries, documents, audio recordings, or music, you can choose if you want to ignore them or copy them to an 'other_files' folder with the 'Copy all other files' option.
 
 This tool is multithreaded to increase performance on high speed storage such as SSDs.
 
@@ -34,7 +36,11 @@ The tool can be run on Linux, MacOS and Windows provided the following requireme
 * [Python 3.5](https://www.python.org/downloads/) or above
 * python3-tk (Comes with Python 3, but may need installing seperately in linux)
 
-Install by running the following in a console
+To check what version of python is installed, open a console and run:
+```python
+python --version
+```
+If the python version is suitable then run the following to install the image-sorting-tool
 ```python
 pip install image-sorting-tool
 ```
