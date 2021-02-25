@@ -249,6 +249,9 @@ destination directory under an 'other_files' folder"
         if self.copy_other_files.get():
             logger.info("Copy 'other files' has been selected")
             self.sorting_tool.copy_unsorted = True
+        if self.rename_duplicates.get():
+            logger.info("Rename duplicates has been selected")
+            self.sorting_tool.rename_duplicates = True
         self.start_button.config(text="Processing", state="disabled")
         self.find_button.config(state="disabled")
         self.after(100, self._sort_images)
