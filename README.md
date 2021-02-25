@@ -28,7 +28,7 @@ If your source folder has other files such as binaries, documents, audio recordi
 
 This tool is multithreaded to increase performance on high speed storage such as SSDs.
 
-No data in the source directory is altered. It is only read from and then copy operations are performed during the sorting process.
+No data in the source directory is altered. It only reads from the source, and then copy operations are performed during the sorting process.
 
 ## Installation
 The tool can be run on Linux, MacOS and Windows provided the following requirements are met
