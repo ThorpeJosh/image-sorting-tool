@@ -38,6 +38,7 @@ class GUI(tk.Tk):
         self.png_sort = tk.IntVar()
         self.gif_sort = tk.IntVar()
         self.mp4_sort = tk.IntVar()
+        self.rename_duplicates = tk.IntVar()
         self.copy_other_files = tk.IntVar()
         self.textbox_width = 100
         self.scroll_width = 100
@@ -119,6 +120,18 @@ following structure "yyyy/mm/yyyymmdd-HHMMSS.jpg"'
             state="normal",
         )
         mp4_checkbox.pack(anchor="w")
+
+        # Checkbox for renaming duplicate files
+        duplicate_checkbox_text = "Rename duplicate images taken within the same second. \
+Useful for burst shots or if you fear duplicates exist with different resolutions. \
+Default behavour is to overwrite duplicates."
+        duplicate_checkbox = ttk.Checkbutton(
+            options_frame,
+            text=duplicate_checkbox_text,
+            variable=self.rename_duplicates,
+            state="normal",
+        )
+        duplicate_checkbox.pack(anchor="w")
 
         # Checkbox for copying unsortable files
         unsortable_checkbox_text = "Copy all other files (including docs, binaries, etc) to the \
