@@ -49,6 +49,7 @@ class GUI(tk.Tk):
     def draw_main(self):
         """Main window for GUI"""
         # pylint: disable=too-many-locals
+        # pylint: disable=too-many-statements
 
         # Clear all widgets from root window
         for widget in self.winfo_children():
