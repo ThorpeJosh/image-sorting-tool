@@ -31,6 +31,7 @@ class ImageSort:
         self.sort_list = []
         self.other_list = []
         self.ext_to_sort = []
+        self.rename_duplicates = False
         self.copy_unsorted = False
         self.sorting_complete = False
 
@@ -104,7 +105,7 @@ begin sorting them\n".format(
         return dtime
 
     @staticmethod
-    def sort_image(message_queue, destination_dir, source_image_path):
+    def sort_image(message_queue, destination_dir, source_image_path, rename_duplicates):
         """Image sorting method that sorts a single image.
         The image is opened and the date taken is attempted to be read from the EXIF data.
         The image is then sorted according to the date taken in the following format...
@@ -133,6 +134,9 @@ begin sorting them\n".format(
                 str(dtime.second).zfill(2),
                 os.path.splitext(source_image_path)[1],
             )
+            if rename_duplicates:
+                # Check if new_name already exists and if so, rename.
+                pass
             new_path = os.path.join(
                 destination_dir, str(dtime.year).zfill(4), str(dtime.month).zfill(2)
             )
@@ -159,7 +163,7 @@ begin sorting them\n".format(
         self.sorting_complete = False
         with multiprocessing.Pool(processes=self.threads_to_use) as pool:
             inputs = [
-                (self.message_queue, self.destination_dir, image)
+                (self.message_queue, self.destination_dir, image, self.rename_duplicates)
                 for image in self.sort_list
             ]
             pool.starmap(self.sort_image, inputs)
