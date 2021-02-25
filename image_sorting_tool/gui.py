@@ -111,7 +111,7 @@ following structure "yyyy/mm/yyyymmdd-HHMMSS.jpg"'
         )
         gif_checkbox.pack(anchor="w")
 
-        # Checkbox for GIF
+        # Checkbox for MP4
         mp4_checkbox = ttk.Checkbutton(
             options_frame,
             text="MP4: Common video format for phones and cameras",
