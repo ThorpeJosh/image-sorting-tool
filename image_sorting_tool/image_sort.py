@@ -7,6 +7,7 @@ import multiprocessing
 import threading
 import time
 import tkinter as tk
+from collections import Counter
 from datetime import datetime
 from dateutil import parser
 from PIL import Image
@@ -108,7 +109,9 @@ class ImageSort:
         return dtime
 
     @staticmethod
-    def sort_image(message_queue, destination_dir, source_image_path, rename_duplicates):
+    def sort_image(
+        message_queue, destination_dir, source_image_path, new_path, new_name
+    ):
         """Image sorting method that sorts a single image.
         The image is opened and the date taken is attempted to be read from the EXIF data.
         The image is then sorted according to the date taken in the following format...
@@ -122,28 +125,6 @@ class ImageSort:
         destination_dir = os.path.abspath(destination_dir)
         source_image_path = os.path.abspath(source_image_path)
         try:
-            if source_image_path.lower().endswith(tuple(JPEG_EXTENSIONS)):
-                # File is JPEG so try extract datetime from EXIF
-                dtime = ImageSort.get_datetime_from_exif(source_image_path)
-            else:
-                dtime = ImageSort.get_datetime_from_filename(source_image_path)
-
-            # pylint: disable=(consider-using-f-string)
-            new_name = "{}{}{}_{}{}{}{}".format(
-                str(dtime.year).zfill(4),
-                str(dtime.month).zfill(2),
-                str(dtime.day).zfill(2),
-                str(dtime.hour).zfill(2),
-                str(dtime.minute).zfill(2),
-                str(dtime.second).zfill(2),
-                os.path.splitext(source_image_path)[1],
-            )
-            if rename_duplicates:
-                # Check if new_name already exists and if so, rename.
-                pass
-            new_path = os.path.join(
-                destination_dir, str(dtime.year).zfill(4), str(dtime.month).zfill(2)
-            )
             os.makedirs(new_path, exist_ok=True)
             image_destination_path = os.path.join(new_path, new_name)
             shutil.copyfile(source_image_path, image_destination_path)
@@ -166,10 +147,52 @@ class ImageSort:
         """
         self.sorting_complete = False
         with multiprocessing.Pool(processes=self.threads_to_use) as pool:
-            inputs = [
-                (self.message_queue, self.destination_dir, image, self.rename_duplicates)
-                for image in self.sort_list
-            ]
+            inputs = []
+            if self.rename_duplicates:
+                dup_date_counter = Counter()
+            dup_idx_str = ""
+            for image_path in self.sort_list:
+                if image_path.lower().endswith(tuple(JPEG_EXTENSIONS)):
+                    # the file is JPEG so try extract datetime from EXIF
+                    dtime = ImageSort.get_datetime_from_exif(image_path)
+                else:
+                    dtime = ImageSort.get_datetime_from_filename(image_path)
+
+                new_path = os.path.join(
+                    self.destination_dir,
+                    str(dtime.year).zfill(4),
+                    str(dtime.month).zfill(2),
+                )
+
+                if self.rename_duplicates:
+                    str_dtime = str(dtime)
+                    if str_dtime in dup_date_counter:
+                        dup_idx = dup_date_counter.get(str_dtime) + 1
+                        dup_idx_str = "_{:02d}".format(dup_idx)
+                    else:
+                        dup_idx_str = ""
+                    dup_date_counter.update({str_dtime: 1})
+
+                new_name = "{}{}{}_{}{}{}{}{}".format(
+                    str(dtime.year).zfill(4),
+                    str(dtime.month).zfill(2),
+                    str(dtime.day).zfill(2),
+                    str(dtime.hour).zfill(2),
+                    str(dtime.minute).zfill(2),
+                    str(dtime.second).zfill(2),
+                    dup_idx_str,
+                    os.path.splitext(image_path)[1],
+                )
+                inputs.append(
+                    (
+                        self.message_queue,
+                        self.destination_dir,
+                        image_path,
+                        new_path,
+                        new_name,
+                    )
+                )
+
             pool.starmap(self.sort_image, inputs)
 
         # Run copy operation on unsortable files if requested
