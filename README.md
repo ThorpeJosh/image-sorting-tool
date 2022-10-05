@@ -37,33 +37,45 @@ The tool can be run on Linux, MacOS and Windows provided the following requireme
 * python3-tk (Comes with Python 3, but may need installing seperately in linux)
 
 To check what version of python is installed, open a console and run:
-```python
+```bash
 python --version
 ```
 If the python version is suitable then run the following to install the image-sorting-tool
-```python
+```bash
 pip install image-sorting-tool
 ```
 
 ## Usage
 Run the following to launch
-```python
+```bash
 image-sorting-tool
 ```
 ## Upgrading
 Run the following to upgrade
-```python
+```bash
 pip install --upgrade image-sorting-tool
 ```
 
 ## Uninstalling
 Run the following to remove the tool from your machine
-```python
+```bash
 pip uninstall image-sorting-tool
 ```
 
 ## Development
-To contribute, install the dev dependencies with
-```python
+To contribute, clone this repo and then install the dev dependencies with
+```bash
 pip install .[dev]
+```
+### Automated checks
+Linting and unit tests should be checked before commiting by running the following:
+```bash
+# Linting
+pylint image_sorting_tool/*.py
+pylint image_sorting_tool/tests/*.py
+
+# Unit test on multiple python versions
+tox
+# Unit test on current environment python version
+pytest
 ```
