@@ -124,27 +124,19 @@ class ImageSort:
         # pylint: disable=(broad-except)
         destination_dir = os.path.abspath(destination_dir)
         source_image_path = os.path.abspath(source_image_path)
-        try:
-            os.makedirs(new_path, exist_ok=True)
-            image_destination_path = os.path.join(new_path, new_name)
-            shutil.copyfile(source_image_path, image_destination_path)
-            message_queue.put(
-                "Sorted: {} --> {}\n".format(source_image_path, image_destination_path)
-            )
-
-        except Exception as error:
-            logger.warning("Failed from: %s: %s", error, source_image_path)
-            message_queue.put(f"Failed: {source_image_path}\n")
-            new_path = os.path.join(destination_dir, "failed_to_sort")
-            new_name = os.path.split(source_image_path)[1]
-            os.makedirs(new_path, exist_ok=True)
-            shutil.copyfile(source_image_path, os.path.join(new_path, new_name))
+        os.makedirs(new_path, exist_ok=True)
+        image_destination_path = os.path.join(new_path, new_name)
+        shutil.copyfile(source_image_path, image_destination_path)
+        message_queue.put(
+            "Sorted: {} --> {}\n".format(source_image_path, image_destination_path)
+        )
 
     def run_parallel_sorting(self):
         """Creates a pool of workers and runs the image sorting across multiple threads.
         The pool size is equal to half the number of available threads the machine has.
         SSD's benifit from multithreading while HDD's will generally be the bottleneck.
         """
+        # pylint: disable=(broad-except)
         self.sorting_complete = False
         with multiprocessing.Pool(processes=self.threads_to_use) as pool:
             inputs = []
@@ -152,11 +144,20 @@ class ImageSort:
                 dup_date_counter = Counter()
             dup_idx_str = ""
             for image_path in self.sort_list:
-                if image_path.lower().endswith(tuple(JPEG_EXTENSIONS)):
-                    # the file is JPEG so try extract datetime from EXIF
-                    dtime = ImageSort.get_datetime_from_exif(image_path)
-                else:
-                    dtime = ImageSort.get_datetime_from_filename(image_path)
+                try:
+                    if image_path.lower().endswith(tuple(JPEG_EXTENSIONS)):
+                        # the file is JPEG so try extract datetime from EXIF
+                        dtime = ImageSort.get_datetime_from_exif(image_path)
+                    else:
+                        dtime = ImageSort.get_datetime_from_filename(image_path)
+                except Exception as error:
+                    logger.warning("Failed from: %s: %s", error, image_path)
+                    self.message_queue.put("Failed: {}\n".format(image_path))
+                    new_path = os.path.join(self.destination_dir, "failed_to_sort")
+                    new_name = os.path.split(image_path)[1]
+                    os.makedirs(new_path, exist_ok=True)
+                    shutil.copyfile(image_path, os.path.join(new_path, new_name))
+                    continue
 
                 new_path = os.path.join(
                     self.destination_dir,
