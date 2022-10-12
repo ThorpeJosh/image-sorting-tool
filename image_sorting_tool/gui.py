@@ -273,7 +273,7 @@ destination directory under an 'other_files' folder"
         self.start_button.config(text="Finished Sorting!", state="normal")
         self.find_button.config(state="normal")
         self.scroll.configure(state="normal")  # Make writable
-        self.scroll.insert(tk.INSERT, "<<<<< SORTING FINISHED >>>>>")
+        self.scroll.insert(tk.INSERT, "<<<<< SORTING FINISHED >>>>>\n")
         self.scroll.yview(tk.END)
         self.scroll.configure(state="disabled")  # Read Only
 

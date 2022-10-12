@@ -61,15 +61,15 @@ def test_find_images(tmp_path, test_extensions, expected_found):
 
     # Sort found images and compare to to the source list to ensure it is identical
     expected_found.sort()
-    sorter.sort_list.sort()
+    sort_list = [image[0] for image in sorter.sort_list]
+    sort_list.sort()
 
     # Add the tmp_path to the expected found list
     expected_found = [os.path.join(tmp_path, filepath) for filepath in expected_found]
 
-    print(expected_found, sorter.sort_list)
-    assert all(
-        expected == found for expected, found in zip(expected_found, sorter.sort_list)
-    )
+    print(f"Expected to be found : {expected_found}")
+    print(f"Sort list : {sorter.sort_list}")
+    assert all(expected == found for expected, found in zip(expected_found, sort_list))
     # Cleanup child threads
     sorter.cleanup()
 
