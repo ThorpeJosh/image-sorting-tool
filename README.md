@@ -74,8 +74,6 @@ Linting and unit tests should be checked before commiting by running the followi
 pylint image_sorting_tool/*.py
 pylint image_sorting_tool/tests/*.py
 
-# Unit test on multiple python versions
-tox
 # Unit test on current environment python version
 pytest
 ```
