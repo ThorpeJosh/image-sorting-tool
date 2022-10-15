@@ -15,7 +15,7 @@ setup(
     packages=['image_sorting_tool'],
     include_package_data=True,
     install_requires=['Pillow>=6.0.0', 'python-dateutil>=2.8.0'],
-    extras_require = {"dev": ["pytest>=6.0.0", "pylint>=2.0.0"]},
+    extras_require = {"dev": ["pytest>=6.0.0", "pylint>=2.0.0", "black>=22.0.0"]},
     python_requires='>=3.5',
     classifiers=[
         'License :: OSI Approved :: MIT License',
