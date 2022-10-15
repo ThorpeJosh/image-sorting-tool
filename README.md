@@ -71,8 +71,7 @@ pip install .[dev]
 Linting and unit tests should be checked before commiting by running the following:
 ```bash
 # Linting
-pylint image_sorting_tool/*.py
-pylint image_sorting_tool/tests/*.py
+pylint image_sorting_tool
 
 # Unit test on current environment python version
 pytest
