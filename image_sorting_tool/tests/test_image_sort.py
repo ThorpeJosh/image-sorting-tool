@@ -59,7 +59,7 @@ def test_find_images(tmp_path, test_extensions, expected_found):
     expected_found = [os.path.join(tmp_path, filepath) for filepath in expected_found]
 
     print(expected_found, sorter.sort_list)
-    assert all([expected == found for expected, found in zip(expected_found, sorter.sort_list)])
+    assert all(expected == found for expected, found in zip(expected_found, sorter.sort_list))
     # Cleanup child threads
     sorter.cleanup()
 
@@ -115,7 +115,7 @@ def test_sort_images(tmp_path, test_extensions, expected_sort):
     sorted_list.sort()
     sorted_gt.sort()
     assert len(sorted_list) == len(sorted_gt)
-    assert all([sort_path == gt_path for sort_path, gt_path in zip(sorted_list, sorted_gt)])
+    assert all(sort_path == gt_path for sort_path, gt_path in zip(sorted_list, sorted_gt))
     # Cleanup child threads
     sorter.cleanup()
 
@@ -152,7 +152,7 @@ def test_find_other_files(tmp_path, test_extensions):
     # Sort found images and compare to to the source list to ensure it is identical
     unsorted_assets.sort()
     sorter.other_list.sort()
-    assert all([src == found for src, found in zip(unsorted_assets, sorter.other_list)])
+    assert all(src == found for src, found in zip(unsorted_assets, sorter.other_list))
     # Cleanup child threads
     sorter.cleanup()
 
@@ -240,6 +240,6 @@ def test_copy_images(tmp_path, test_extensions, expected_result):
     print(sorted_list, expected_result)
     for result, exp_result in zip(sorted_list, expected_result):
         print(result, exp_result)
-    assert all([sort_path == gt_path for sort_path, gt_path in zip(sorted_list, expected_result)])
+    assert all(sort_path == gt_path for sort_path, gt_path in zip(sorted_list, expected_result))
     # Cleanup child threads
     sorter.cleanup()

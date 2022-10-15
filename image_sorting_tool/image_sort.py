@@ -57,18 +57,14 @@ class ImageSort:
             self.tk_text_object.delete("1.0", tk.END)
             self.tk_text_object.insert(
                 tk.INSERT,
-                "Found {} images/videos meeting the above criteria in {} ..... press 'start' to \
-begin sorting them\n".format(
-                    len(self.sort_list), self.source_dir
-                ),
+                f"Found {len(self.sort_list)} images/videos meeting the above criteria in {self.source_dir} ..... press 'start' to \
+begin sorting them\n"
             )
             self.tk_text_object.insert(
                 tk.INSERT,
-                "Found {} files that won't be sorted (videos, docs, etc), tick the "
+                f"Found {len(self.other_list)} files that won't be sorted (videos, docs, etc), tick the "
                 "'Copy all other files' box above if you want them copied to the destination "
-                "folder during sorting\n".format(
-                    len(self.other_list)
-                ),
+                "folder during sorting\n"
             )
             self.tk_text_object.yview(tk.END)
             self.tk_text_object.configure(state="disabled")  # Read Only
@@ -94,7 +90,7 @@ begin sorting them\n".format(
         valid_years = [str(year) for year in range(1970, 2100)]
         in_years = [year in filename for year in valid_years]
         if sum(in_years) == 0:
-            raise ValueError("No year found in {}".format(filename))
+            raise ValueError(f"No year found in {filename}")
         # Extract only numbers from the filename
         filename = os.path.splitext(filename)[0]
         numbers = [char for char in filename if char.isdigit()]
@@ -124,6 +120,7 @@ begin sorting them\n".format(
             else:
                 dtime = ImageSort.get_datetime_from_filename(source_image_path)
 
+            # pylint: disable=(consider-using-f-string)
             new_name = "{}{}{}_{}{}{}{}".format(
                 str(dtime.year).zfill(4),
                 str(dtime.month).zfill(2),
@@ -145,7 +142,7 @@ begin sorting them\n".format(
 
         except Exception as error:
             logger.warning("Failed from: %s: %s", error, source_image_path)
-            message_queue.put("Failed: {}\n".format(source_image_path))
+            message_queue.put(f"Failed: {source_image_path}\n")
             new_path = os.path.join(destination_dir, "failed_to_sort")
             new_name = os.path.split(source_image_path)[1]
             os.makedirs(new_path, exist_ok=True)
@@ -184,7 +181,7 @@ begin sorting them\n".format(
         shutil.copyfile(source_path, destination_path)
         logger.debug("Copied unsortable file %s --> %s", source_path, destination_path)
         message_queue.put(
-            "Copied unsortable file {} --> {}\n".format(source_path, destination_path)
+            f"Copied unsortable file {source_path} --> {destination_path}\n"
         )
 
     def run_parallel_copy(self):
