@@ -44,8 +44,7 @@ pipeline {
                             echo "Environment: ${DOCKER_IMAGE}:${DOCKER_TAG}"
                             sh '''
                             . venv/bin/activate
-                            echo "CODE FORMATTER NOT ENABLED"
-                            #black --check --diff tp_timesheet
+                            black --check --diff image_sorting_tool
                             '''
                         }
                     }

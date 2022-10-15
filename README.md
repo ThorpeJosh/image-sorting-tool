@@ -70,6 +70,9 @@ pip install .[dev]
 ### Automated checks
 Linting and unit tests should be checked before commiting by running the following:
 ```bash
+# Code formatting
+black  image-sorting-tool
+
 # Linting
 pylint image_sorting_tool
 
