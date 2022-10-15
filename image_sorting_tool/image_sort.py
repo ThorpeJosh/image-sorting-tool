@@ -18,6 +18,7 @@ logger = logging.getLogger("root")
 
 class ImageSort:
     """Image sorting tool"""
+
     # pylint: disable=too-many-instance-attributes
 
     def __init__(self, source_dir, destination_dir, tk_text_object):
@@ -47,7 +48,9 @@ class ImageSort:
                 else:
                     # Other files for a copy operation
                     self.other_list.append(os.path.join(root_path, file_name))
-        logger.info("Found %i sortable files in %s", len(self.sort_list), self.source_dir)
+        logger.info(
+            "Found %i sortable files in %s", len(self.sort_list), self.source_dir
+        )
         logger.info(
             "Found %i unsortable files in %s", len(self.other_list), self.source_dir
         )
@@ -57,14 +60,18 @@ class ImageSort:
             self.tk_text_object.delete("1.0", tk.END)
             self.tk_text_object.insert(
                 tk.INSERT,
-                f"Found {len(self.sort_list)} images/videos meeting the above criteria in {self.source_dir} ..... press 'start' to \
-begin sorting them\n"
+                (
+                    f"Found {len(self.sort_list)} images/videos meeting the above criteria in "
+                    f"{self.source_dir} ..... press 'start' to begin sorting them\n"
+                ),
             )
             self.tk_text_object.insert(
                 tk.INSERT,
-                f"Found {len(self.other_list)} files that won't be sorted (videos, docs, etc), tick the "
-                "'Copy all other files' box above if you want them copied to the destination "
-                "folder during sorting\n"
+                (
+                    f"Found {len(self.other_list)} files that won't be sorted (videos, docs, etc), "
+                    "tick the 'Copy all other files' box above if you want them copied to the "
+                    "destination folder during sorting\n"
+                ),
             )
             self.tk_text_object.yview(tk.END)
             self.tk_text_object.configure(state="disabled")  # Read Only

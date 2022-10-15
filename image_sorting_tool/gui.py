@@ -34,7 +34,7 @@ class GUI(tk.Tk):
         """Method called during __init__ that initialises some user variables and parameters"""
         self.source_dir_var = tk.StringVar()
         self.destination_dir_var = tk.StringVar()
-        self.jpeg_sort = tk.IntVar(value=1) # Preselect the JPEG option
+        self.jpeg_sort = tk.IntVar(value=1)  # Preselect the JPEG option
         self.png_sort = tk.IntVar()
         self.gif_sort = tk.IntVar()
         self.mp4_sort = tk.IntVar()
@@ -105,7 +105,7 @@ following structure "yyyy/mm/yyyymmdd-HHMMSS.jpg"'
         # Checkbox for GIF
         gif_checkbox = ttk.Checkbutton(
             options_frame,
-            text='GIF: Animated pictures from internet or moving pictures taken with phone',
+            text="GIF: Animated pictures from internet or moving pictures taken with phone",
             variable=self.gif_sort,
             state="normal",
         )
@@ -114,7 +114,7 @@ following structure "yyyy/mm/yyyymmdd-HHMMSS.jpg"'
         # Checkbox for GIF
         mp4_checkbox = ttk.Checkbutton(
             options_frame,
-            text='MP4: Common video format for phones and cameras',
+            text="MP4: Common video format for phones and cameras",
             variable=self.mp4_sort,
             state="normal",
         )
@@ -165,7 +165,9 @@ destination directory under an 'other_files' folder"
         self.start_button.config(state="disabled")
 
         # Find Images Button
-        self.find_button = ttk.Button(self, text="Find Images", command=self.find_images)
+        self.find_button = ttk.Button(
+            self, text="Find Images", command=self.find_images
+        )
         self.find_button.grid(column=no_col - 2, row=button_row, padx=5, pady=5)
         self.find_button.config(state="disabled")
 
@@ -194,7 +196,7 @@ destination directory under an 'other_files' folder"
         self.scroll.configure(state="disabled")  # Read Only
 
     def get_extensions_to_sort(self):
-        """ Checks the state of all the file type checkboxes and updates the list accordingly"""
+        """Checks the state of all the file type checkboxes and updates the list accordingly"""
         self.ext_to_sort = []
         if self.jpeg_sort.get():
             self.ext_to_sort.extend(JPEG_EXTENSIONS)
@@ -242,9 +244,7 @@ destination directory under an 'other_files' folder"
         threading.Thread(
             target=self.sorting_tool.run_parallel_sorting, daemon=True
         ).start()
-        threading.Thread(
-            target=self._reset_buttons, daemon=True
-        ).start()
+        threading.Thread(target=self._reset_buttons, daemon=True).start()
 
     def _reset_buttons(self):
         """Waits for sorting process to finish and then reactivates the start button and prints

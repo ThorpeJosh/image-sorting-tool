@@ -9,33 +9,41 @@ import pytest
 # pylint: disable=import-error
 
 tests_path = os.path.dirname(os.path.abspath(__file__))
-src_path = tests_path+'/../'
+src_path = tests_path + "/../"
 sys.path.insert(0, src_path)
 from image_sort import ImageSort
 from image_sort import JPEG_EXTENSIONS
 
-ASSETS_PATH = tests_path+'/../../assets/test_assets/'
+ASSETS_PATH = tests_path + "/../../assets/test_assets/"
 TEST_ASSETS = [os.path.join(ASSETS_PATH, asset) for asset in os.listdir(ASSETS_PATH)]
 
-@pytest.mark.parametrize("test_extensions,expected_found", [
-    (JPEG_EXTENSIONS, ['no_exif.jpg',
-                       'no_exif20000101-010101.jpg',
-                       'pass_0.JPG',
-                       'pass_1.JPG']),
-    (['.png'], ['Screenshot 2017-05-12 18.46.55.png']),
-    (['.mp4'], ['20180930_165600.mp4']),
-    (['.gif'], ['Animated_2018-0305_093556.gif']),
-    (JPEG_EXTENSIONS + ['.png', '.mp4', '.gif'], ['no_exif.jpg',
-                                                  'no_exif20000101-010101.jpg',
-                                                  'pass_0.JPG',
-                                                  'pass_1.JPG',
-                                                  'Animated_2018-0305_093556.gif',
-                                                  '20180930_165600.mp4',
-                                                  'Screenshot 2017-05-12 18.46.55.png'])
-    ])  # Tests each filetype indiviually and then collectively
+
+@pytest.mark.parametrize(
+    "test_extensions,expected_found",
+    [
+        (
+            JPEG_EXTENSIONS,
+            ["no_exif.jpg", "no_exif20000101-010101.jpg", "pass_0.JPG", "pass_1.JPG"],
+        ),
+        ([".png"], ["Screenshot 2017-05-12 18.46.55.png"]),
+        ([".mp4"], ["20180930_165600.mp4"]),
+        ([".gif"], ["Animated_2018-0305_093556.gif"]),
+        (
+            JPEG_EXTENSIONS + [".png", ".mp4", ".gif"],
+            [
+                "no_exif.jpg",
+                "no_exif20000101-010101.jpg",
+                "pass_0.JPG",
+                "pass_1.JPG",
+                "Animated_2018-0305_093556.gif",
+                "20180930_165600.mp4",
+                "Screenshot 2017-05-12 18.46.55.png",
+            ],
+        ),
+    ],
+)  # Tests each filetype indiviually and then collectively
 def test_find_images(tmp_path, test_extensions, expected_found):
-    """ Test that the tool can find the images in the test assets directory
-    """
+    """Test that the tool can find the images in the test assets directory"""
     # Convert posix path to string for older python versions
     tmp_path = str(tmp_path)
 
@@ -59,41 +67,57 @@ def test_find_images(tmp_path, test_extensions, expected_found):
     expected_found = [os.path.join(tmp_path, filepath) for filepath in expected_found]
 
     print(expected_found, sorter.sort_list)
-    assert all(expected == found for expected, found in zip(expected_found, sorter.sort_list))
+    assert all(
+        expected == found for expected, found in zip(expected_found, sorter.sort_list)
+    )
     # Cleanup child threads
     sorter.cleanup()
 
 
-@pytest.mark.parametrize("test_extensions,expected_sort", [
-    (JPEG_EXTENSIONS, ['failed_to_sort/no_exif.jpg',
-                       '2000/01/20000101_010101.jpg',
-                       '2013/04/20130407_132135.JPG',
-                       '2013/04/20130408_131738.JPG']),
-    (['.png'], ['2017/05/20170512_184655.png']),
-    (['.mp4'], ['2018/09/20180930_165600.mp4']),
-    (['.gif'], ['2018/03/20180305_093556.gif']),
-    (JPEG_EXTENSIONS + ['.png', '.mp4', '.gif'], ['failed_to_sort/no_exif.jpg',
-                                                  '2013/04/20130407_132135.JPG',
-                                                  '2013/04/20130408_131738.JPG',
-                                                  '2000/01/20000101_010101.jpg',
-                                                  '2018/03/20180305_093556.gif',
-                                                  '2018/09/20180930_165600.mp4',
-                                                  '2017/05/20170512_184655.png'])
-    ])  # Tests each filetype indiviually and then collectively
+@pytest.mark.parametrize(
+    "test_extensions,expected_sort",
+    [
+        (
+            JPEG_EXTENSIONS,
+            [
+                "failed_to_sort/no_exif.jpg",
+                "2000/01/20000101_010101.jpg",
+                "2013/04/20130407_132135.JPG",
+                "2013/04/20130408_131738.JPG",
+            ],
+        ),
+        ([".png"], ["2017/05/20170512_184655.png"]),
+        ([".mp4"], ["2018/09/20180930_165600.mp4"]),
+        ([".gif"], ["2018/03/20180305_093556.gif"]),
+        (
+            JPEG_EXTENSIONS + [".png", ".mp4", ".gif"],
+            [
+                "failed_to_sort/no_exif.jpg",
+                "2013/04/20130407_132135.JPG",
+                "2013/04/20130408_131738.JPG",
+                "2000/01/20000101_010101.jpg",
+                "2018/03/20180305_093556.gif",
+                "2018/09/20180930_165600.mp4",
+                "2017/05/20170512_184655.png",
+            ],
+        ),
+    ],
+)  # Tests each filetype indiviually and then collectively
 def test_sort_images(tmp_path, test_extensions, expected_sort):
-    """ Test that the tool can sort the images in the test assets directory
-    """
+    """Test that the tool can sort the images in the test assets directory"""
     # Convert posix path to string for older python versions
     tmp_path = str(tmp_path)
 
     # Create tmp directories for the test
-    tmp_src = os.path.abspath(os.path.join(tmp_path, 'src/'))
-    tmp_dst = os.path.abspath(os.path.join(tmp_path, 'dst/'))
+    tmp_src = os.path.abspath(os.path.join(tmp_path, "src/"))
+    tmp_dst = os.path.abspath(os.path.join(tmp_path, "dst/"))
     os.mkdir(tmp_src)
     os.mkdir(tmp_dst)
 
     # Add the tmp directory to the ground truths
-    sorted_gt = [os.path.abspath(os.path.join(tmp_dst, gt_path)) for gt_path in expected_sort]
+    sorted_gt = [
+        os.path.abspath(os.path.join(tmp_dst, gt_path)) for gt_path in expected_sort
+    ]
 
     # Copy test assets to a tmp_path
     for asset in TEST_ASSETS:
@@ -115,20 +139,25 @@ def test_sort_images(tmp_path, test_extensions, expected_sort):
     sorted_list.sort()
     sorted_gt.sort()
     assert len(sorted_list) == len(sorted_gt)
-    assert all(sort_path == gt_path for sort_path, gt_path in zip(sorted_list, sorted_gt))
+    assert all(
+        sort_path == gt_path for sort_path, gt_path in zip(sorted_list, sorted_gt)
+    )
     # Cleanup child threads
     sorter.cleanup()
 
 
-@pytest.mark.parametrize("test_extensions", [(JPEG_EXTENSIONS),
-                                            (['.png']),
-                                            (['.mp4']),
-                                            (['.gif']),
-                                            (JPEG_EXTENSIONS + ['.png', '.mp4', '.gif'])
-                                            ])
+@pytest.mark.parametrize(
+    "test_extensions",
+    [
+        (JPEG_EXTENSIONS),
+        ([".png"]),
+        ([".mp4"]),
+        ([".gif"]),
+        (JPEG_EXTENSIONS + [".png", ".mp4", ".gif"]),
+    ],
+)
 def test_find_other_files(tmp_path, test_extensions):
-    """ Test that the tool can find unsorted files in the test assets directory
-    """
+    """Test that the tool can find unsorted files in the test assets directory"""
     # Convert posix path to string for older python versions
     tmp_path = str(tmp_path)
 
@@ -141,7 +170,7 @@ def test_find_other_files(tmp_path, test_extensions):
     sorter.find_images()
 
     # Adjust the assets list for only unsortable files
-    unsorted_assets= []
+    unsorted_assets = []
     for asset in tmp_assets:
         if not asset.lower().endswith(tuple(test_extensions)):
             unsorted_assets.append(asset)
@@ -157,63 +186,93 @@ def test_find_other_files(tmp_path, test_extensions):
     sorter.cleanup()
 
 
-@pytest.mark.parametrize("test_extensions,expected_result", [
-    (JPEG_EXTENSIONS, ['failed_to_sort/no_exif.jpg',
-                       '2000/01/20000101_010101.jpg',
-                       '2013/04/20130407_132135.JPG',
-                       '2013/04/20130408_131738.JPG',
-                       'other_files/text.txt',
-                       'other_files/Screenshot 2017-05-12 18.46.55.png',
-                       'other_files/20180930_165600.mp4',
-                       'other_files/Animated_2018-0305_093556.gif']),
-    (['.png'], ['other_files/no_exif.jpg',
-                'other_files/no_exif20000101-010101.jpg',
-                'other_files/pass_0.JPG',
-                'other_files/pass_1.JPG',
-                '2017/05/20170512_184655.png',
-                'other_files/text.txt',
-                'other_files/20180930_165600.mp4',
-                'other_files/Animated_2018-0305_093556.gif']),
-    (['.mp4'], ['other_files/no_exif.jpg',
-                'other_files/no_exif20000101-010101.jpg',
-                'other_files/pass_0.JPG',
-                'other_files/pass_1.JPG',
-                'other_files/Screenshot 2017-05-12 18.46.55.png',
-                'other_files/text.txt',
-                '2018/09/20180930_165600.mp4',
-                'other_files/Animated_2018-0305_093556.gif']),
-    (['.gif'], ['other_files/no_exif.jpg',
-                'other_files/no_exif20000101-010101.jpg',
-                'other_files/pass_0.JPG',
-                'other_files/pass_1.JPG',
-                'other_files/Screenshot 2017-05-12 18.46.55.png',
-                'other_files/text.txt',
-                'other_files/20180930_165600.mp4',
-                '2018/03/20180305_093556.gif']),
-    (JPEG_EXTENSIONS + ['.png', '.mp4', '.gif'], ['failed_to_sort/no_exif.jpg',
-                                                  '2013/04/20130407_132135.JPG',
-                                                  '2013/04/20130408_131738.JPG',
-                                                  '2000/01/20000101_010101.jpg',
-                                                  '2018/03/20180305_093556.gif',
-                                                  '2018/09/20180930_165600.mp4',
-                                                  'other_files/text.txt',
-                                                  '2017/05/20170512_184655.png'])
-    ])  # Tests each filetype indiviually and then collectively
+@pytest.mark.parametrize(
+    "test_extensions,expected_result",
+    [
+        (
+            JPEG_EXTENSIONS,
+            [
+                "failed_to_sort/no_exif.jpg",
+                "2000/01/20000101_010101.jpg",
+                "2013/04/20130407_132135.JPG",
+                "2013/04/20130408_131738.JPG",
+                "other_files/text.txt",
+                "other_files/Screenshot 2017-05-12 18.46.55.png",
+                "other_files/20180930_165600.mp4",
+                "other_files/Animated_2018-0305_093556.gif",
+            ],
+        ),
+        (
+            [".png"],
+            [
+                "other_files/no_exif.jpg",
+                "other_files/no_exif20000101-010101.jpg",
+                "other_files/pass_0.JPG",
+                "other_files/pass_1.JPG",
+                "2017/05/20170512_184655.png",
+                "other_files/text.txt",
+                "other_files/20180930_165600.mp4",
+                "other_files/Animated_2018-0305_093556.gif",
+            ],
+        ),
+        (
+            [".mp4"],
+            [
+                "other_files/no_exif.jpg",
+                "other_files/no_exif20000101-010101.jpg",
+                "other_files/pass_0.JPG",
+                "other_files/pass_1.JPG",
+                "other_files/Screenshot 2017-05-12 18.46.55.png",
+                "other_files/text.txt",
+                "2018/09/20180930_165600.mp4",
+                "other_files/Animated_2018-0305_093556.gif",
+            ],
+        ),
+        (
+            [".gif"],
+            [
+                "other_files/no_exif.jpg",
+                "other_files/no_exif20000101-010101.jpg",
+                "other_files/pass_0.JPG",
+                "other_files/pass_1.JPG",
+                "other_files/Screenshot 2017-05-12 18.46.55.png",
+                "other_files/text.txt",
+                "other_files/20180930_165600.mp4",
+                "2018/03/20180305_093556.gif",
+            ],
+        ),
+        (
+            JPEG_EXTENSIONS + [".png", ".mp4", ".gif"],
+            [
+                "failed_to_sort/no_exif.jpg",
+                "2013/04/20130407_132135.JPG",
+                "2013/04/20130408_131738.JPG",
+                "2000/01/20000101_010101.jpg",
+                "2018/03/20180305_093556.gif",
+                "2018/09/20180930_165600.mp4",
+                "other_files/text.txt",
+                "2017/05/20170512_184655.png",
+            ],
+        ),
+    ],
+)  # Tests each filetype indiviually and then collectively
 def test_copy_images(tmp_path, test_extensions, expected_result):
-    """ Test that the tool can copy the unsorted files in the test assets directory
+    """Test that the tool can copy the unsorted files in the test assets directory
     when the user selects this option.
     """
     # Convert posix path to string for older python versions
     tmp_path = str(tmp_path)
 
     # Create tmp directories for the test
-    tmp_src = os.path.abspath(os.path.join(tmp_path, 'src/'))
-    tmp_dst = os.path.abspath(os.path.join(tmp_path, 'dst/'))
+    tmp_src = os.path.abspath(os.path.join(tmp_path, "src/"))
+    tmp_dst = os.path.abspath(os.path.join(tmp_path, "dst/"))
     os.mkdir(tmp_src)
     os.mkdir(tmp_dst)
 
     # Add the tmp directory to the ground truths
-    expected_result = [os.path.abspath(os.path.join(tmp_dst, path)) for path in expected_result]
+    expected_result = [
+        os.path.abspath(os.path.join(tmp_dst, path)) for path in expected_result
+    ]
 
     # Copy test assets to a tmp_path
     for asset in TEST_ASSETS:
@@ -240,6 +299,8 @@ def test_copy_images(tmp_path, test_extensions, expected_result):
     print(sorted_list, expected_result)
     for result, exp_result in zip(sorted_list, expected_result):
         print(result, exp_result)
-    assert all(sort_path == gt_path for sort_path, gt_path in zip(sorted_list, expected_result))
+    assert all(
+        sort_path == gt_path for sort_path, gt_path in zip(sorted_list, expected_result)
+    )
     # Cleanup child threads
     sorter.cleanup()
