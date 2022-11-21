@@ -296,7 +296,8 @@ def test_copy_images(tmp_path, test_extensions, expected_result):
     sorted_list.sort()
     expected_result.sort()
     assert len(sorted_list) == len(expected_result)
-    print(sorted_list, expected_result)
+    print(f"sorted_list : {sorted_list}")
+    print(f"expected result : {expected_result}")
     for result, exp_result in zip(sorted_list, expected_result):
         print(result, exp_result)
     assert all(

@@ -115,14 +115,14 @@ class ImageSort:
         for root_path, __, files in os.walk(self.source_dir):
             for file_name in files:
                 file_path = os.path.join(root_path, file_name)
+                new_path, new_name, new_name_diff = get_new_path(file_path)
                 if file_name.lower().endswith(tuple(self.ext_to_sort)):
-                    new_path, new_name, new_name_diff = get_new_path(file_path)
                     self.sort_list.append(
                         (file_path, new_path, new_name, new_name_diff)
                     )
                 else:
                     # Other files for a copy operation
-                    self.other_list.append(file_path)
+                    self.other_list.append((file_path, new_path, new_name, None))
         logger.info(
             "Found %i sortable files in %s", len(self.sort_list), self.source_dir
         )
@@ -165,7 +165,7 @@ class ImageSort:
             self.tk_text_object.configure(state="disabled")  # Read Only
 
     @staticmethod
-    def sort_image(
+    def copy_file(
         message_queue, destination_dir, source_image_path, new_path, new_name
     ):
         """Image sorting method that sorts a single image.
@@ -182,7 +182,9 @@ class ImageSort:
         os.makedirs(new_path, exist_ok=True)
         image_destination_path = os.path.join(new_path, new_name)
         shutil.copyfile(source_image_path, image_destination_path)
-        message_queue.put(f"Sorted: {source_image_path} --> {image_destination_path}\n")
+        message_queue.put(
+            f"Processed : {source_image_path} --> {image_destination_path}\n"
+        )
 
     def run_parallel_sorting(self):
         """Creates a pool of workers and runs the image sorting across multiple threads.
@@ -206,7 +208,7 @@ class ImageSort:
                     new_name_diff,
                 ) in self.sort_list
             ]
-            pool.starmap(self.sort_image, inputs)
+            pool.starmap(self.copy_file, inputs)
 
         # Run copy operation on unsortable files if requested
         if self.copy_unsorted:
@@ -214,22 +216,6 @@ class ImageSort:
             self.run_parallel_copy()
         self.sorting_complete = True
         logger.info("Sorting Completed")
-
-    @staticmethod
-    def copy_file(message_queue, destination_dir, source_path):
-        """File copy method that copies unsortable files to the destination folder"""
-        source_path = os.path.abspath(source_path)
-        destination_dir = os.path.abspath(destination_dir)
-        os.makedirs(destination_dir, exist_ok=True)
-
-        destination_path = os.path.abspath(
-            os.path.join(destination_dir, os.path.split(source_path)[1])
-        )
-        shutil.copyfile(source_path, destination_path)
-        logger.debug("Copied unsortable file %s --> %s", source_path, destination_path)
-        message_queue.put(
-            f"Copied unsortable file {source_path} --> {destination_path}\n"
-        )
 
     def run_parallel_copy(self):
         """Creates a pool of workers and runs the unsortable file copying across multiple threads.
@@ -241,8 +227,14 @@ class ImageSort:
         )
         with multiprocessing.Pool(processes=self.threads_to_use) as pool:
             inputs = [
-                (self.message_queue, unsortable_dir, filename)
-                for filename in self.other_list
+                (
+                    self.message_queue,
+                    unsortable_dir,
+                    source_file_path,
+                    new_path,
+                    new_name,
+                )
+                for (source_file_path, new_path, new_name, _) in self.other_list
             ]
             pool.starmap(self.copy_file, inputs)
 
