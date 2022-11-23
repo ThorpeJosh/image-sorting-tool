@@ -37,36 +37,6 @@ class ImageSort:
         self.copy_unsorted = False
         self.sorting_complete = False
 
-    @staticmethod
-    def get_datetime_from_exif(filepath):
-        """Attempt to get the datetime an image was taken from the EXIF data"""
-        # pylint: disable=(protected-access) #This is the call to _getexif
-        # pylint: disable=(broad-except)
-        try:
-            date_taken = Image.open(filepath)._getexif()[36867]
-            dtime = datetime.strptime(date_taken, "%Y:%m:%d %H:%M:%S")
-            return dtime
-        except Exception:
-            # Reading from exif failed, try filename instead
-            return ImageSort.get_datetime_from_filename(filepath)
-
-    @staticmethod
-    def get_datetime_from_filename(filepath):
-        """Attempt to get the datetime of a file from it's filename"""
-        filename = os.path.split(filepath)[1]
-        # See if the years from 1970-2099 exist in the filename
-        valid_years = [str(year) for year in range(1970, 2100)]
-        in_years = [year in filename for year in valid_years]
-        if sum(in_years) == 0:
-            raise ValueError(f"No year found in {filename}")
-        # Extract only numbers from the filename
-        filename = os.path.splitext(filename)[0]
-        numbers = [char for char in filename if char.isdigit()]
-        numbers = "".join(numbers)
-        # Extract datetime from numbers
-        dtime = parser.parse(numbers)
-        return dtime
-
     def find_images(self):
         """The image finding function
         Searches for all .jpg and .mp4 in the source directory, including all subfolders
@@ -166,6 +136,36 @@ class ImageSort:
                 )
             self.tk_text_object.yview(tk.END)
             self.tk_text_object.configure(state="disabled")  # Read Only
+
+    @staticmethod
+    def get_datetime_from_exif(filepath):
+        """Attempt to get the datetime an image was taken from the EXIF data"""
+        # pylint: disable=(protected-access) #This is the call to _getexif
+        # pylint: disable=(broad-except)
+        try:
+            date_taken = Image.open(filepath)._getexif()[36867]
+            dtime = datetime.strptime(date_taken, "%Y:%m:%d %H:%M:%S")
+            return dtime
+        except Exception:
+            # Reading from exif failed, try filename instead
+            return ImageSort.get_datetime_from_filename(filepath)
+
+    @staticmethod
+    def get_datetime_from_filename(filepath):
+        """Attempt to get the datetime of a file from it's filename"""
+        filename = os.path.split(filepath)[1]
+        # See if the years from 1970-2099 exist in the filename
+        valid_years = [str(year) for year in range(1970, 2100)]
+        in_years = [year in filename for year in valid_years]
+        if sum(in_years) == 0:
+            raise ValueError(f"No year found in {filename}")
+        # Extract only numbers from the filename
+        filename = os.path.splitext(filename)[0]
+        numbers = [char for char in filename if char.isdigit()]
+        numbers = "".join(numbers)
+        # Extract datetime from numbers
+        dtime = parser.parse(numbers)
+        return dtime
 
     @staticmethod
     def copy_file(
