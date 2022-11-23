@@ -181,7 +181,11 @@ def test_find_other_files(tmp_path, test_extensions):
     # Sort found images and compare to to the source list to ensure it is identical
     unsorted_assets.sort()
     sorter.other_list.sort()
-    assert all(src == found for src, found in zip(unsorted_assets, sorter.other_list))
+    print(f"unsorted_assets : {unsorted_assets}")
+    print(f"other_list : {sorter.other_list}")
+    assert all(
+        src == found[0] for src, found in zip(unsorted_assets, sorter.other_list)
+    )
     # Cleanup child threads
     sorter.cleanup()
 

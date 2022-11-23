@@ -115,20 +115,23 @@ class ImageSort:
         for root_path, __, files in os.walk(self.source_dir):
             for file_name in files:
                 file_path = os.path.join(root_path, file_name)
-                new_path, new_name, new_name_diff = get_new_path(file_path)
                 if file_name.lower().endswith(tuple(self.ext_to_sort)):
+                    new_path, new_name, new_name_diff = get_new_path(file_path)
                     self.sort_list.append(
                         (file_path, new_path, new_name, new_name_diff)
                     )
                 else:
                     # Other files for a copy operation
-                    self.other_list.append((file_path, new_path, new_name, None))
+                    new_path = os.path.join(self.destination_dir, "other_files")
+                    self.other_list.append((file_path, new_path, file_name, None))
         logger.info(
             "Found %i sortable files in %s", len(self.sort_list), self.source_dir
         )
+        logger.debug("Sortable files : %s", self.sort_list)
         logger.info(
             "Found %i unsortable files in %s", len(self.other_list), self.source_dir
         )
+        logger.debug("Unsortable files : %s", self.other_list)
         logger.info(
             "Found %i dupplicated files in %s",
             sum(dup_date_counter.values()) - len(dup_date_counter),
