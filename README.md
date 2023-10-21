@@ -1,5 +1,6 @@
 # Image Sorting Tool
 [![Build Status](https://jenkins.thorpe.work/buildStatus/icon?job=image-sorting-tool%2Fmain&subject=build%20status)](https://jenkins.thorpe.work/blue/organizations/jenkins/image-sorting-tool/activity)
+[![Python Checks](https://github.com/ThorpeJosh/image-sorting-tool/actions/workflows/python-test.yml/badge.svg)](https://github.com/ThorpeJosh/image-sorting-tool/actions/workflows/python-test.yml)
 [![PyPI version](https://img.shields.io/pypi/v/image-sorting-tool.svg)](https://pypi.org/project/image-sorting-tool/)
 [![PyPI license](https://img.shields.io/pypi/l/image-sorting-tool.svg)](https://pypi.org/project/image-sorting-tool/)  
 ![Screenshot](https://github.com/ThorpeJosh/ImageSortingTool/blob/main/assets/ImageSortingTool.PNG?raw=true)
