@@ -1,7 +1,7 @@
 from setuptools import setup
 from image_sorting_tool import __version__ as version
 
-REQUIREMENTS = ["Pillow~=9.0", "python-dateutil~=2.8"]
+REQUIREMENTS = ["Pillow~=10.0.1", "python-dateutil~=2.8"]
 DEV_REQUIREMENTS = {
     "dev": [
         "pytest==7.2.*",
