@@ -1,6 +1,15 @@
 from setuptools import setup
 from image_sorting_tool import __version__ as version
 
+REQUIREMENTS = ["Pillow~=9.0", "python-dateutil~=2.8"]
+DEV_REQUIREMENTS = {
+    "dev": [
+        "pytest==7.2.*",
+        "pylint==2.16.*",
+        "black==23.1.*",
+    ]
+}
+
 setup(
     name="image-sorting-tool",
     version=version,
@@ -14,9 +23,9 @@ setup(
     keywords=["image", "sort", "gui", "executable"],
     packages=["image_sorting_tool"],
     include_package_data=True,
-    install_requires=["Pillow>=6.0.0", "python-dateutil>=2.8.0"],
-    extras_require={"dev": ["pytest>=7.0.0", "pylint>=2.0.0", "black>=22.0.0"]},
-    python_requires=">=3.8",
+    install_requires=REQUIREMENTS,
+    extras_require=DEV_REQUIREMENTS,
+    python_requires=">=3.8, <=3.12",
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python",
