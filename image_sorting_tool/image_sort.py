@@ -194,7 +194,7 @@ class ImageSort:
     def run_parallel_copy(self):
         """Creates a pool of workers and runs the unsortable file copying across multiple threads.
         The pool size is equal to half the number of available threads the machine has.
-        SSD's benifit from multithreading while HDD's will generally be the bottleneck.
+        SSD's benefit from multi-threading while HDD's will generally be the bottleneck.
         """
         unsortable_dir = os.path.abspath(
             os.path.join(self.destination_dir, "other_files/")
@@ -212,10 +212,12 @@ class ImageSort:
             message = self.message_queue.get()
             if message == "kill":
                 break
-            self.tk_text_object.configure(state="normal")  # Make writable
-            self.tk_text_object.insert(tk.INSERT, message)
-            self.tk_text_object.yview(tk.END)
-            self.tk_text_object.configure(state="disabled")  # Read Only
+            if self.tk_text_object is not None:
+                # Only run if a GUI object is provided
+                self.tk_text_object.configure(state="normal")  # Make writable
+                self.tk_text_object.insert(tk.INSERT, message)
+                self.tk_text_object.yview(tk.END)
+                self.tk_text_object.configure(state="disabled")  # Read Only
 
     def cleanup(self):
         """Cleanup function that kills any threads spawned on instance creation"""
