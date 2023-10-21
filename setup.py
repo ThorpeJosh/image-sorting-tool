@@ -5,7 +5,7 @@ REQUIREMENTS = ["Pillow~=10.0.1", "python-dateutil~=2.8"]
 DEV_REQUIREMENTS = {
     "dev": [
         "pytest==7.4.*",
-        "pylint==2.17.*",
+        "pylint==3.0.*",
         "black==23.10.*",
     ]
 }
