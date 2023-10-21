@@ -68,7 +68,7 @@ pipeline {
                             echo "Environment: ${DOCKER_IMAGE}:${DOCKER_TAG}"
                             sh '''
                             . venv/bin/activate
-                            pytest
+                            pytest -v
                             '''
                         }
                     }
