@@ -14,8 +14,14 @@ sys.path.insert(0, src_path)
 from image_sort import ImageSort
 from image_sort import JPEG_EXTENSIONS
 
-ASSETS_PATH = tests_path + "/../../assets/test_assets/"
-TEST_ASSETS = [os.path.join(ASSETS_PATH, asset) for asset in os.listdir(ASSETS_PATH)]
+MIXED_ASSETS_PATH = tests_path + "/../../assets/test_assets/mix"
+MIXED_TEST_ASSETS = [
+    os.path.join(MIXED_ASSETS_PATH, asset) for asset in os.listdir(MIXED_ASSETS_PATH)
+]
+BURST_ASSETS_PATH = tests_path + "/../../assets/test_assets/burst"
+BURST_TEST_ASSETS = [
+    os.path.join(BURST_ASSETS_PATH, asset) for asset in os.listdir(BURST_ASSETS_PATH)
+]
 
 
 @pytest.mark.parametrize(
@@ -44,11 +50,9 @@ TEST_ASSETS = [os.path.join(ASSETS_PATH, asset) for asset in os.listdir(ASSETS_P
 )  # Tests each filetype indiviually and then collectively
 def test_find_images(tmp_path, test_extensions, expected_found):
     """Test that the tool can find the images in the test assets directory"""
-    # Convert posix path to string for older python versions
-    tmp_path = str(tmp_path)
 
     # Copy test assets to a tmp_path
-    for asset in TEST_ASSETS:
+    for asset in MIXED_TEST_ASSETS:
         shutil.copy2(asset, tmp_path)
 
     # Run finding tool
@@ -105,8 +109,6 @@ def test_find_images(tmp_path, test_extensions, expected_found):
 )  # Tests each filetype indiviually and then collectively
 def test_sort_images(tmp_path, test_extensions, expected_sort):
     """Test that the tool can sort the images in the test assets directory"""
-    # Convert posix path to string for older python versions
-    tmp_path = str(tmp_path)
 
     # Create tmp directories for the test
     tmp_src = os.path.abspath(os.path.join(tmp_path, "src/"))
@@ -120,7 +122,7 @@ def test_sort_images(tmp_path, test_extensions, expected_sort):
     ]
 
     # Copy test assets to a tmp_path
-    for asset in TEST_ASSETS:
+    for asset in MIXED_TEST_ASSETS:
         shutil.copy2(asset, tmp_src)
     sorter = ImageSort(tmp_src, tmp_dst, None)
     sorter.ext_to_sort = test_extensions
@@ -158,11 +160,9 @@ def test_sort_images(tmp_path, test_extensions, expected_sort):
 )
 def test_find_other_files(tmp_path, test_extensions):
     """Test that the tool can find unsorted files in the test assets directory"""
-    # Convert posix path to string for older python versions
-    tmp_path = str(tmp_path)
 
     # Copy test assets to a tmp_path
-    tmp_assets = [shutil.copy2(asset, tmp_path) for asset in TEST_ASSETS]
+    tmp_assets = [shutil.copy2(asset, tmp_path) for asset in MIXED_TEST_ASSETS]
 
     # Run finding tool
     sorter = ImageSort(tmp_path, tmp_path, None)
@@ -178,7 +178,7 @@ def test_find_other_files(tmp_path, test_extensions):
     # Ensure finder found right number of images
     assert len(unsorted_assets) == len(sorter.other_list)
 
-    # Sort found images and compare to to the source list to ensure it is identical
+    # Sort found images and compare to the source list to ensure it is identical
     unsorted_assets.sort()
     sorter.other_list.sort()
     print(f"unsorted_assets : {unsorted_assets}")
@@ -264,9 +264,6 @@ def test_copy_images(tmp_path, test_extensions, expected_result):
     """Test that the tool can copy the unsorted files in the test assets directory
     when the user selects this option.
     """
-    # Convert posix path to string for older python versions
-    tmp_path = str(tmp_path)
-
     # Create tmp directories for the test
     tmp_src = os.path.abspath(os.path.join(tmp_path, "src/"))
     tmp_dst = os.path.abspath(os.path.join(tmp_path, "dst/"))
@@ -279,7 +276,7 @@ def test_copy_images(tmp_path, test_extensions, expected_result):
     ]
 
     # Copy test assets to a tmp_path
-    for asset in TEST_ASSETS:
+    for asset in MIXED_TEST_ASSETS:
         shutil.copy2(asset, tmp_src)
     sorter = ImageSort(tmp_src, tmp_dst, None)
     sorter.ext_to_sort = test_extensions
