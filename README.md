@@ -65,10 +65,13 @@ pip uninstall image-sorting-tool
 
 ## Development
 To contribute, clone this repo and then install the dev dependencies with
-```bash
+```shell
+# Installs package locally so code changes will affect behaviour
 pip install -e .[dev]
+
+#Launch with -vv flag for debug logs
+image-sorting-tool -vv 
 ```
-Rerun the above `pip install -e` command after making code changes then launch with `image-sorting-tool -vv` for debug logs.
 
 ### Automated checks
 Linting and unit tests should be checked before committing by running the following:
