@@ -1,3 +1,4 @@
+"""Setup module to allow packaging, distributing and pip installing"""
 from setuptools import setup
 from image_sorting_tool import __version__ as version
 
@@ -10,6 +11,9 @@ DEV_REQUIREMENTS = {
     ]
 }
 
+with open("README.md", encoding="utf-8") as readme_file:
+    LONG_DESCRIPTION = "".join(readme_file.readlines())
+
 setup(
     name="image-sorting-tool",
     version=version,
@@ -18,7 +22,7 @@ setup(
     author="Joshua Thorpe",
     author_email="josh@thorpe.engineering",
     description="Graphical tool to sort images into a folder structure based on the date the images were taken",
-    long_description="".join(open("README.md", encoding="utf-8").readlines()),
+    long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
     keywords=["image", "sort", "gui", "executable"],
     packages=["image_sorting_tool"],

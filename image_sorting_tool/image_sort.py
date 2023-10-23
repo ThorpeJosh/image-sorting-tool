@@ -39,11 +39,34 @@ class File:
             f"'{self.destination_relative_path}', '{self.sorted_filename}', {self.duplicate_idx})"
         )
 
+    def generate_output_filename(self, sort_filename: bool):
+        """Generate the output filename
+        Arguments:
+            sort: if filename should be modified to the sorting structure or not
+        """
+        if sort_filename:
+            self.sorted_filename = (
+                f"{self.datetime.year:0>4}{self.datetime.month:0>2}{self.datetime.day:0>2}"
+                f"_{self.datetime.hour:0>2}{self.datetime.minute:0>2}{self.datetime.second:0>2}"
+                f"{self.extension}"
+            )
+        else:
+            self.sorted_filename = self.filename
+
+    def update_filename_with_duplicate_postfix(self):
+        """Update the filename by appending a postfix for duplicate datetime files"""
+        if not self.duplicate_idx:
+            raise ValueError(
+                f"The 'duplicate_idx' must be set before a duplicate postfix can be added: {self}"
+            )
+        self.sorted_filename = self.sorted_filename.replace(
+            self.extension,
+            f"_{self.duplicate_idx:0>3}{self.extension}",
+        )
+
 
 class ImageSort:
     """Image sorting tool"""
-
-    # pylint: disable=too-many-instance-attributes
 
     def __init__(self, source_dir, destination_dir, tk_text_object):
         self.source_dir = source_dir
@@ -105,10 +128,7 @@ class ImageSort:
                     duplicate_hashmap[input_file.datetime] = 1
 
                 # Set output filename and destination dir
-                input_file.sorted_filename = (
-                    f"{input_file.datetime.year:0>4}{input_file.datetime.month:0>2}{input_file.datetime.day:0>2}"
-                    f"_{input_file.datetime.hour:0>2}{input_file.datetime.minute:0>2}{input_file.datetime.second:0>2}{input_file.extension}"
-                )
+                input_file.generate_output_filename(sort_filename=True)
                 input_file.destination_relative_path = os.path.join(
                     str(input_file.datetime.year).zfill(4),
                     str(input_file.datetime.month).zfill(2),
@@ -117,13 +137,13 @@ class ImageSort:
                 input_file.sort_flag = True
             elif (not input_file.datetime) and requested_sort:
                 # Case: File was requested to be sorted but datetime was not extracted
-                input_file.sorted_filename = input_file.filename
+                input_file.generate_output_filename(sort_filename=False)
                 input_file.destination_relative_path = "failed_to_sort"
                 self.failed_list.append(index)
                 input_file.sort_flag = True
             else:
                 # Case: file type was not requested to be sorted
-                input_file.sorted_filename = input_file.filename
+                input_file.generate_output_filename(sort_filename=False)
                 input_file.destination_relative_path = "other_files"
                 self.other_list.append(index)
                 if self.copy_unsorted:
@@ -147,6 +167,9 @@ class ImageSort:
 
                 # Set the input_file duplicate index
                 input_file.duplicate_idx = duplicate_idx_hashmap[input_file.datetime]
+                if self.rename_duplicates:
+                    # update output filename with prefix
+                    input_file.update_filename_with_duplicate_postfix()
 
         # Log Stats for files to be sorted
         logger.info(
@@ -258,6 +281,7 @@ class ImageSort:
             input_file: File object
         Returns: File object with datetime modified
         """
+        # pylint: disable=(broad-except)
         try:
             if input_file.extension.lower().endswith(tuple(JPEG_EXTENSIONS)):
                 # the file is JPEG so try extract datetime from EXIF
@@ -268,16 +292,6 @@ class ImageSort:
                 input_file.datetime = ImageSort._get_datetime_from_filename(
                     input_file.fullpath
                 )
-
-        # str_dtime = str(dtime)
-        # dup_idx_str = ""
-        # if str_dtime in dup_date_counter:
-        #     dup_idx = dup_date_counter.get(str_dtime) + 1
-        #     dup_idx_str = f"_{dup_idx:0>2}"
-        # dup_date_counter.update({str_dtime: 1})
-
-        # ext = os.path.splitext(image_path)[1]
-        # new_name_diff = new_name_diff_off.replace(ext, f"{dup_idx_str}{ext}")
 
         except Exception as error:
             logger.warning(
@@ -331,7 +345,6 @@ class ImageSort:
                 for input_file in self.files_list
                 if input_file.sort_flag
             ]
-            print(inputs)
             pool.starmap(self.copy_file, inputs)
 
         self.sorting_complete = True

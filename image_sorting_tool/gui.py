@@ -150,7 +150,8 @@ class GUI(tk.Tk):
 
         # Checkbox for renaming duplicate files
         duplicate_checkbox_text = (
-            "Rename images with duplicate 'date taken' times to '<date_taken>_1.jpg', '<date taken>_2.jpg'..."
+            "Rename images with duplicate 'date taken' times to "
+            "'<date_taken>_1.jpg', '<date taken>_2.jpg'..."
             # "Useful for burst shots or if you fear duplicates exist with different resolutions. "
             # "Default behaviour is to overwrite duplicates."
         )
@@ -234,7 +235,10 @@ class GUI(tk.Tk):
         self.rowconfigure(scroll_text_row, weight=1)
         self.scroll.insert(
             tk.INSERT,
-            'Welcome, Enter a source and destination directory, then click "Analyse Source Directory"\n',
+            (
+                "Welcome, Enter a source and destination directory, "
+                'then click "Analyse Source Directory"\n',
+            ),
         )
         self.scroll.configure(state="disabled")  # Read Only
 
