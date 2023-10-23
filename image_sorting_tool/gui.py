@@ -88,16 +88,16 @@ class GUI(tk.Tk):
             column=0, row=description_row, columnspan=no_col, pady=0
         )
         structure_text = (
-            "The 'Output Folder' structure follows 'yyyy/mm/yyyymmdd-HHMMSS.jpg', for example:\n"
+            "The 'Output Folder' structure follows 'yyyy/mm/yyyymmdd_HHMMSS.jpg', for example:\n"
             "    ├── 2019\n"
             "       └── 12\n"
-            "          ├── 20191011-180520.jpg\n"
-            "          └── 20191029-204731.png\n"
+            "          ├── 20191011_180520.jpg\n"
+            "          └── 20191029_204731.png\n"
             "    └── 2020\n"
             "       ├── 01\n"
-            "          └── 20200114-135312.mp4\n"
+            "          └── 20200114_135312.mp4\n"
             "       └── 03\n"
-            "          └── 20200301-110330.jpg"
+            "          └── 20200301_110330.jpg"
         )
         sample_structure_message = tk.Message(self, text=structure_text, width=500)
         sample_structure_message.grid(

@@ -6,22 +6,22 @@
 ![Screenshot](https://github.com/ThorpeJosh/ImageSortingTool/blob/main/assets/ImageSortingTool.PNG?raw=true)
 This is a simple graphical tool to sort media into a structured folder. It is designed primarily for JPG images taken with a camera/phone but will also work with MP4, PNG and GIF media files. It works by finding all files in a chosen source directory (including sub-directories) and then based on the chosen sorting options, copies them into a structured destination.
 
-The date-taken for JPG files is extracted from the EXIF data and for all other file formats the filename is used to extract the date-taken. The files destination name will be in format 'yyyymmdd-HHMMSS'. For example '20201225-234532.jpg'
+The date-taken for JPG files is extracted from the EXIF data and for all other file formats the filename is used to extract the date-taken. The files destination name will be in format 'yyyymmdd_HHMMSS'. For example '20201225_234532.jpg'
 The default output structure is year and month folders. For example:
 
 /<br>
 ├── 2019/<br>
 &ensp;&ensp;&ensp;&ensp;├── 07/<br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;├── 20190712-141507.jpg<br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;└── 20190719-224521.jpg<br>
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;├── 20190712_141507.jpg<br>
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;└── 20190719_224521.jpg<br>
 &ensp;&ensp;&ensp;&ensp;└── 10/<br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;├── 20191011-180520.jpg<br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;└── 20191029-204731.jpg<br>
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;├── 20191011_180520.jpg<br>
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;└── 20191029_204731.jpg<br>
 └── 2020/<br>
 &ensp;&ensp;&ensp;&ensp;├── 01/<br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;└── 20200114-135312.jpg<br>
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;└── 20200114_135312.jpg<br>
 &ensp;&ensp;&ensp;&ensp;└── 03/<br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;└── 20200301-110330.jpg<br>
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;└── 20200301_110330.jpg<br>
 
 Files that cannot have the date-taken extracted (missing EXIF or bad filenames) will be copied to a 'failed_to_sort' folder in the root directory of the above structure without any renaming. These files are commonly ones downloaded from the internet or shared through social media.
 
