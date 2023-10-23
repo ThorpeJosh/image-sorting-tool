@@ -8,7 +8,7 @@ from image_sorting_tool.gui import GUI
 
 # Create root logger
 LOG_FORMAT = "%(levelname)s %(asctime)s : %(message)s"
-logger = logging.getLogger("root")
+logger = logging.getLogger("image-sorting-tool")
 logger.setLevel(logging.DEBUG)
 
 # Log to stdout

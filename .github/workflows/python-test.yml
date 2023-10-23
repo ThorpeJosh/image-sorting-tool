@@ -29,8 +29,8 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install .[dev]
       - name: Pylint
-        run: pylint image_sorting_tool
+        run: pylint $(git ls-files '*.py')
       - name: Pytest
         run: pytest -v
       - name: Black
-        run: black --check --diff image_sorting_tool
+        run: black --check --diff $(git ls-files '*.py')
