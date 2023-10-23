@@ -3,7 +3,7 @@
 [![Python Checks](https://github.com/ThorpeJosh/image-sorting-tool/actions/workflows/python-test.yml/badge.svg)](https://github.com/ThorpeJosh/image-sorting-tool/actions/workflows/python-test.yml)
 [![PyPI version](https://img.shields.io/pypi/v/image-sorting-tool.svg)](https://pypi.org/project/image-sorting-tool/)
 [![PyPI license](https://img.shields.io/pypi/l/image-sorting-tool.svg)](https://pypi.org/project/image-sorting-tool/)  
-![Screenshot](https://github.com/ThorpeJosh/ImageSortingTool/blob/main/assets/ImageSortingTool.PNG?raw=true)
+![Screenshot](https://raw.githubusercontent.com/ThorpeJosh/image-sorting-tool/main/assets/ImageSortingTool.PNG)
 This is a simple graphical tool to sort media into a structured folder. It is designed primarily for JPG images taken with a camera/phone but will also work with MP4, PNG and GIF media files. It works by finding all files in a chosen source directory (including sub-directories) and then based on the chosen sorting options, copies them into a structured destination.
 
 The date-taken for JPG files is extracted from the EXIF data and for all other file formats the filename is used to extract the date-taken. The files destination name will be in format 'yyyymmdd-HHMMSS'. For example '20201225-234532.jpg'
