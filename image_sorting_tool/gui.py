@@ -268,6 +268,12 @@ class GUI(tk.Tk):
             self.source_dir_var.get(), self.destination_dir_var.get(), self.scroll
         )
         self.sorting_tool.ext_to_sort = self.ext_to_sort
+        if self.copy_other_files.get():
+            logger.info("Copy 'other files' has been selected")
+            self.sorting_tool.copy_unsorted = True
+        if self.rename_duplicates.get():
+            logger.info("Rename duplicates has been selected")
+            self.sorting_tool.rename_duplicates = True
         self.sorting_tool.find_images()
         self.find_button.config(text="Finished Analysing Input Folder", state="normal")
         self.find_flag = True
@@ -277,14 +283,6 @@ class GUI(tk.Tk):
         """Wrapper for calling _sort_images after button state has changed."""
         logger.debug("Sorting has been called from GUI")
         self.sorting_tool.destination_dir = self.destination_dir_var.get()
-        self.get_extensions_to_sort()
-        self.sorting_tool.ext_to_sort = self.ext_to_sort
-        if self.copy_other_files.get():
-            logger.info("Copy 'other files' has been selected")
-            self.sorting_tool.copy_unsorted = True
-        if self.rename_duplicates.get():
-            logger.info("Rename duplicates has been selected")
-            self.sorting_tool.rename_duplicates = True
         self.start_button.config(text="Processing", state="disabled")
         self.find_button.config(state="disabled")
         self.after(100, self._sort_images)

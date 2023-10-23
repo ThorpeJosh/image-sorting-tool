@@ -182,6 +182,19 @@ class ImageSort:
             ),
         )
 
+        # Log Stats for files that will fail to be sorted
+        logger.info(
+            "Found %i files that will Fail to sort in %s",
+            len(self.failed_list),
+            self.source_dir,
+        )
+        logger.debug(
+            "Failed sorting files : \n%s\n",
+            "\n".join(
+                [i.fullpath for i in [self.files_list[j] for j in self.failed_list]]
+            ),
+        )
+
         # Log Stats for files Not to be sorted
         logger.info(
             "Found %i files not matching sort options in %s",
@@ -192,17 +205,6 @@ class ImageSort:
             "Sortable files not matching sort options :\n%s\n",
             "\n".join(
                 [i.fullpath for i in [self.files_list[j] for j in self.other_list]]
-            ),
-        )
-
-        # Log Stats for files that will fail to be sorted
-        logger.info(
-            "Found %i unsortable files in %s", len(self.failed_list), self.source_dir
-        )
-        logger.debug(
-            "Unsortable files : \n%s\n",
-            "\n".join(
-                [i.fullpath for i in [self.files_list[j] for j in self.failed_list]]
             ),
         )
 
@@ -226,9 +228,17 @@ class ImageSort:
             self.tk_text_object.configure(state="normal")  # Make writable
             self.tk_text_object.insert(
                 tk.INSERT,
-                f"\nFound {len(self.sort_list)} images/videos meeting the above criteria in\n"
+                f"\nFound {len(self.sort_list)} images/videos meeting the above criteria that will successfully sort in\n"
                 f"{self.source_dir}\n",
             )
+
+            if self.failed_list:
+                self.tk_text_object.insert(
+                    tk.INSERT,
+                    f"\nWARNING: Found {len(self.failed_list)} files meeting the above criteria that won't be sorted "
+                    "due to no date-taken data being available, these files will go into a 'failed_to_sort' folder during sorting\n",
+                )
+
             if self.other_list:
                 self.tk_text_object.insert(
                     tk.INSERT,
@@ -358,6 +368,7 @@ class ImageSort:
             destination_dir: the output folder selected by the user
             input_file: File object
         """
+        logger.debug("Copying: %s", input_file)
         new_path = os.path.join(destination_dir, input_file.destination_relative_path)
         os.makedirs(new_path, exist_ok=True)
         destination_fullpath = os.path.join(new_path, input_file.sorted_filename)
