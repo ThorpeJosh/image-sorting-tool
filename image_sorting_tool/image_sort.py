@@ -77,10 +77,10 @@ class ImageSort:
         self.message_queue = self.manager.Queue()
         threading.Thread(target=self.read_queue, daemon=True).start()
         self.files_list = []  # Master list of files
-        self.sort_list = []  # Index positions on self.files_list
-        self.other_list = []  # Index positions on self.files_list
-        self.failed_list = []  # Index positions on self.files_list
-        self.duplicates_list = []  # Index positions on self.files_list
+        self.sort_list = []  # Index positions of self.files_list
+        self.other_list = []  # Index positions of self.files_list
+        self.failed_list = []  # Index positions of self.files_list
+        self.duplicates_list = []  # Index positions of self.files_list
         self.ext_to_sort = []
         self.rename_duplicates = False
         self.copy_unsorted = False
