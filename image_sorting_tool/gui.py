@@ -11,7 +11,7 @@ from tkinter import scrolledtext
 from image_sorting_tool.image_sort import ImageSort
 from image_sorting_tool.image_sort import JPEG_EXTENSIONS
 
-logger = logging.getLogger("root")
+logger = logging.getLogger("image-sorting-tool")
 
 
 class GUI(tk.Tk):
@@ -59,10 +59,15 @@ class GUI(tk.Tk):
 
         # Main GUI has 3 columns
         no_col = 3
-        file_options_row = 2
-        source_dir_row = 3
-        description_dir_row = 4
-        button_row = 5
+        title_row = 0
+        description_row = 1
+        sample_structure_row = 2
+        file_options_row = 3
+        extra_options_row = 4
+        source_dir_row = 5
+        description_dir_row = 6
+        button_row = 7
+        scroll_text_row = 8
 
         # Allow middle column to grow when window is resized
         self.columnconfigure(1, weight=1, minsize=self.textbox_width * 5)
@@ -71,24 +76,41 @@ class GUI(tk.Tk):
         title_label = ttk.Label(
             self, text="Image Sorting Tool - Maintained by Joshua Thorpe"
         )
-        title_label.grid(column=0, row=0, columnspan=no_col, pady=5)
+        title_label.grid(column=0, row=title_row, columnspan=no_col, pady=10)
 
-        # Second row
-        message = (
-            "Source directory: Directory which to search recursively for files \n"
-            + 'Destination directory: Directory to place the sorted files into, with the \
-following structure "yyyy/mm/yyyymmdd-HHMMSS.jpg"'
+        # description row
+        description_message_text = (
+            "This tool reads the files from the 'Input Folder' "
+            "and creates a sorted copy of the files in the 'Output Folder'."
         )
-        description_message = tk.Message(self, text=message, width=1000)
-        description_message.grid(column=0, row=1, columnspan=no_col, pady=5)
+        description_message = tk.Message(self, text=description_message_text, width=700)
+        description_message.grid(
+            column=0, row=description_row, columnspan=no_col, pady=0
+        )
+        structure_text = (
+            "The 'Output Folder' structure follows 'yyyy/mm/yyyymmdd-HHMMSS.jpg', for example:\n"
+            "    ├── 2019\n"
+            "       └── 12\n"
+            "          ├── 20191011-180520.jpg\n"
+            "          └── 20191029-204731.png\n"
+            "    └── 2020\n"
+            "       ├── 01\n"
+            "          └── 20200114-135312.mp4\n"
+            "       └── 03\n"
+            "          └── 20200301-110330.jpg"
+        )
+        sample_structure_message = tk.Message(self, text=structure_text, width=500)
+        sample_structure_message.grid(
+            column=0, row=sample_structure_row, columnspan=no_col, pady=5
+        )
 
         # Filetype options frame
-        options_frame = ttk.LabelFrame(self, text="File types to sort:")
-        options_frame.grid(column=1, row=file_options_row, sticky="EW")
+        file_type_options_frame = ttk.LabelFrame(self, text="File types to sort:")
+        file_type_options_frame.grid(column=1, row=file_options_row, sticky="EW")
 
         # Checkbox for JPEG
         jpeg_checkbox = ttk.Checkbutton(
-            options_frame,
+            file_type_options_frame,
             text="JPG, JPEG: Common format for images captured by camera",
             variable=self.jpeg_sort,
             state="normal",
@@ -97,7 +119,7 @@ following structure "yyyy/mm/yyyymmdd-HHMMSS.jpg"'
 
         # Checkbox for PNG
         png_checkbox = ttk.Checkbutton(
-            options_frame,
+            file_type_options_frame,
             text="PNG: Commonly used for screenshots or graphic images from internet",
             variable=self.png_sort,
             state="normal",
@@ -106,7 +128,7 @@ following structure "yyyy/mm/yyyymmdd-HHMMSS.jpg"'
 
         # Checkbox for GIF
         gif_checkbox = ttk.Checkbutton(
-            options_frame,
+            file_type_options_frame,
             text="GIF: Animated pictures from internet or moving pictures taken with phone",
             variable=self.gif_sort,
             state="normal",
@@ -115,19 +137,25 @@ following structure "yyyy/mm/yyyymmdd-HHMMSS.jpg"'
 
         # Checkbox for MP4
         mp4_checkbox = ttk.Checkbutton(
-            options_frame,
+            file_type_options_frame,
             text="MP4: Common video format for phones and cameras",
             variable=self.mp4_sort,
             state="normal",
         )
         mp4_checkbox.pack(anchor="w")
 
+        # Extra options frame
+        extra_options_frame = ttk.LabelFrame(self, text="Extra Options:")
+        extra_options_frame.grid(column=1, row=extra_options_row, sticky="EW")
+
         # Checkbox for renaming duplicate files
-        duplicate_checkbox_text = "Rename duplicate images taken within the same second. \
-Useful for burst shots or if you fear duplicates exist with different resolutions. \
-Default behavour is to overwrite duplicates."
+        duplicate_checkbox_text = (
+            "Rename images with duplicate 'date taken' times to '<date_taken>_1.jpg', '<date taken>_2.jpg'..."
+            # "Useful for burst shots or if you fear duplicates exist with different resolutions. "
+            # "Default behaviour is to overwrite duplicates."
+        )
         duplicate_checkbox = ttk.Checkbutton(
-            options_frame,
+            extra_options_frame,
             text=duplicate_checkbox_text,
             variable=self.rename_duplicates,
             state="normal",
@@ -135,10 +163,12 @@ Default behavour is to overwrite duplicates."
         duplicate_checkbox.pack(anchor="w")
 
         # Checkbox for copying unsortable files
-        unsortable_checkbox_text = "Copy all other files (including docs, binaries, etc) to the \
-destination directory under an 'other_files' folder"
+        unsortable_checkbox_text = (
+            "Copy all other files (documents, binaries, etc) to the "
+            "destination directory under an 'other_files' folder"
+        )
         unsortable_checkbox = ttk.Checkbutton(
-            options_frame,
+            extra_options_frame,
             text=unsortable_checkbox_text,
             variable=self.copy_other_files,
             state="normal",
@@ -146,7 +176,7 @@ destination directory under an 'other_files' folder"
         unsortable_checkbox.pack(anchor="w")
 
         # Source Directory Widgets
-        ttk.Label(self, text="Source Directory").grid(
+        ttk.Label(self, text="Input Folder").grid(
             column=0, row=source_dir_row, padx=5, sticky="W"
         )
         self.source_textbox = ttk.Entry(
@@ -158,7 +188,7 @@ destination directory under an 'other_files' folder"
         ).grid(column=2, row=source_dir_row, padx=5, sticky="E")
 
         # Output File Widgets
-        ttk.Label(self, text="Destination Directory").grid(
+        ttk.Label(self, text="Output Folder").grid(
             column=0, row=description_dir_row, padx=5, sticky="W"
         )
         self.destination_textbox = ttk.Entry(
@@ -180,7 +210,7 @@ destination directory under an 'other_files' folder"
 
         # Find Images Button
         self.find_button = ttk.Button(
-            self, text="Find Images", command=self.find_images
+            self, text="Analyse Source Directory", command=self.find_images
         )
         self.find_button.grid(column=no_col - 2, row=button_row, padx=5, pady=5)
         self.find_button.config(state="disabled")
@@ -190,7 +220,6 @@ destination directory under an 'other_files' folder"
         quit_button.grid(column=0, row=button_row, padx=5, pady=5, sticky="EW")
 
         # Scrolled Text Widget
-        scroll_text_row = 6
         self.scroll = scrolledtext.ScrolledText(
             self, width=self.scroll_width, height=self.scroll_height, wrap=tk.WORD
         )
@@ -205,7 +234,7 @@ destination directory under an 'other_files' folder"
         self.rowconfigure(scroll_text_row, weight=1)
         self.scroll.insert(
             tk.INSERT,
-            'Welcome, Enter a source and destination directory, then click "Find Images"',
+            'Welcome, Enter a source and destination directory, then click "Analyse Source Directory"\n',
         )
         self.scroll.configure(state="disabled")  # Read Only
 
@@ -236,7 +265,7 @@ destination directory under an 'other_files' folder"
         )
         self.sorting_tool.ext_to_sort = self.ext_to_sort
         self.sorting_tool.find_images()
-        self.find_button.config(text="Finished Finding Images", state="normal")
+        self.find_button.config(text="Finished Analysing Input Folder", state="normal")
         self.find_flag = True
         self.enable_buttons()
 
