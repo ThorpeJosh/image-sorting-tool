@@ -228,15 +228,16 @@ class ImageSort:
             self.tk_text_object.configure(state="normal")  # Make writable
             self.tk_text_object.insert(
                 tk.INSERT,
-                f"\nFound {len(self.sort_list)} images/videos meeting the above criteria that will successfully sort in\n"
-                f"{self.source_dir}\n",
+                f"\nFound {len(self.sort_list)} images/videos meeting the above criteria "
+                f"that will successfully sort in {self.source_dir}\n",
             )
 
             if self.failed_list:
                 self.tk_text_object.insert(
                     tk.INSERT,
                     f"\nWARNING: Found {len(self.failed_list)} files meeting the above criteria that won't be sorted "
-                    "due to no date-taken data being available, these files will go into a 'failed_to_sort' folder during sorting\n",
+                    "due to no date-taken data being available, "
+                    "these files will go into a 'failed_to_sort' folder during sorting\n",
                 )
 
             if self.other_list:
