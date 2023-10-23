@@ -25,60 +25,6 @@ BURST_TEST_ASSETS = [
 
 
 @pytest.mark.parametrize(
-    "test_extensions,expected_found",
-    [
-        (
-            JPEG_EXTENSIONS,
-            ["no_exif.jpg", "no_exif20000101-010101.jpg", "pass_0.JPG", "pass_1.JPG"],
-        ),
-        ([".png"], ["Screenshot 2017-05-12 18.46.55.png"]),
-        ([".mp4"], ["20180930_165600.mp4"]),
-        ([".gif"], ["Animated_2018-0305_093556.gif"]),
-        (
-            JPEG_EXTENSIONS + [".png", ".mp4", ".gif"],
-            [
-                "no_exif.jpg",
-                "no_exif20000101-010101.jpg",
-                "pass_0.JPG",
-                "pass_1.JPG",
-                "Animated_2018-0305_093556.gif",
-                "20180930_165600.mp4",
-                "Screenshot 2017-05-12 18.46.55.png",
-            ],
-        ),
-    ],
-)  # Tests each filetype indiviually and then collectively
-def test_find_images(tmp_path, test_extensions, expected_found):
-    """Test that the tool can find the images in the test assets directory"""
-
-    # Copy test assets to a tmp_path
-    for asset in MIXED_TEST_ASSETS:
-        shutil.copy2(asset, tmp_path)
-
-    # Run finding tool
-    sorter = ImageSort(tmp_path, tmp_path, None)
-    sorter.ext_to_sort = test_extensions
-    sorter.find_images()
-
-    # Ensure finder found right number of images
-    assert len(expected_found) == len(sorter.sort_list)
-
-    # Sort found images and compare to to the source list to ensure it is identical
-    expected_found.sort()
-    sort_list = [image[0] for image in sorter.sort_list]
-    sort_list.sort()
-
-    # Add the tmp_path to the expected found list
-    expected_found = [os.path.join(tmp_path, filepath) for filepath in expected_found]
-
-    print(f"Expected to be found : {expected_found}")
-    print(f"Sort list : {sorter.sort_list}")
-    assert all(expected == found for expected, found in zip(expected_found, sort_list))
-    # Cleanup child threads
-    sorter.cleanup()
-
-
-@pytest.mark.parametrize(
     "test_extensions,expected_sort",
     [
         (
@@ -124,11 +70,11 @@ def test_sort_images(tmp_path, test_extensions, expected_sort):
     # Copy test assets to a tmp_path
     for asset in MIXED_TEST_ASSETS:
         shutil.copy2(asset, tmp_src)
+
+    # Run the sorting
     sorter = ImageSort(tmp_src, tmp_dst, None)
     sorter.ext_to_sort = test_extensions
     sorter.find_images()
-
-    # Run the sorting
     sorter.run_parallel_sorting()
 
     # Find sorted images
@@ -168,6 +114,7 @@ def test_find_other_files(tmp_path, test_extensions):
     sorter = ImageSort(tmp_path, tmp_path, None)
     sorter.ext_to_sort = test_extensions
     sorter.find_images()
+    sorter_found_list = [sorter.files_list[i].fullpath for i in sorter.other_list]
 
     # Adjust the assets list for only unsortable files
     unsorted_assets = []
@@ -176,16 +123,14 @@ def test_find_other_files(tmp_path, test_extensions):
             unsorted_assets.append(asset)
 
     # Ensure finder found right number of images
-    assert len(unsorted_assets) == len(sorter.other_list)
+    assert len(unsorted_assets) == len(sorter_found_list)
 
-    # Sort found images and compare to the source list to ensure it is identical
+    # Sort found images lists and compare to the source list to ensure it is identical
     unsorted_assets.sort()
-    sorter.other_list.sort()
+    sorter_found_list.sort()
     print(f"unsorted_assets : {unsorted_assets}")
-    print(f"other_list : {sorter.other_list}")
-    assert all(
-        src == found[0] for src, found in zip(unsorted_assets, sorter.other_list)
-    )
+    print(f"other_list : {sorter_found_list}")
+    assert all(src == found for src, found in zip(unsorted_assets, sorter_found_list))
     # Cleanup child threads
     sorter.cleanup()
 
@@ -299,6 +244,88 @@ def test_copy_images(tmp_path, test_extensions, expected_result):
     assert len(sorted_list) == len(expected_result)
     print(f"sorted_list : {sorted_list}")
     print(f"expected result : {expected_result}")
+    for result, exp_result in zip(sorted_list, expected_result):
+        print(result, exp_result)
+    assert all(
+        sort_path == gt_path for sort_path, gt_path in zip(sorted_list, expected_result)
+    )
+    # Cleanup child threads
+    sorter.cleanup()
+
+
+@pytest.mark.parametrize(
+    "test_extensions,expected_result,test_assets",
+    [
+        (
+            JPEG_EXTENSIONS,
+            [
+                "2013/04/20130408_131738_001.jpeg",
+                "2013/04/20130408_131738_002.jpeg",
+                "2013/04/20130408_131738_003.jpeg",
+                "2013/04/20130408_131738_004.jpeg",
+                "2013/04/20130408_131738_005.jpeg",
+                "2013/04/20130408_131738_006.jpeg",
+                "2013/04/20130408_131738_007.jpeg",
+                "2013/04/20130408_131738_008.jpeg",
+            ],
+            BURST_TEST_ASSETS,
+        ),
+        (
+            JPEG_EXTENSIONS + [".png", ".mp4", ".gif"],
+            [
+                "failed_to_sort/no_exif.jpg",
+                "2013/04/20130407_132135.JPG",
+                "2013/04/20130408_131738.JPG",
+                "2000/01/20000101_010101.jpg",
+                "2018/03/20180305_093556.gif",
+                "2018/09/20180930_165600.mp4",
+                "2017/05/20170512_184655.png",
+            ],
+            MIXED_TEST_ASSETS,
+        ),
+    ],
+)  # Tests each filetype indiviually and then collectively
+def test_rename_duplicates_images(
+    tmp_path, test_extensions, expected_result, test_assets
+):
+    """Test that the tool can rename duplicates in the test assets directory
+    when the user selects this option.
+    """
+    # Create tmp directories for the test
+    tmp_src = os.path.abspath(os.path.join(tmp_path, "src/"))
+    tmp_dst = os.path.abspath(os.path.join(tmp_path, "dst/"))
+    os.mkdir(tmp_src)
+    os.mkdir(tmp_dst)
+
+    # Add the tmp directory to the ground truths
+    expected_result = [
+        os.path.abspath(os.path.join(tmp_dst, path)) for path in expected_result
+    ]
+
+    # Copy test assets to a tmp_path
+    for asset in test_assets:
+        shutil.copy2(asset, tmp_src)
+    sorter = ImageSort(tmp_src, tmp_dst, None)
+    sorter.ext_to_sort = test_extensions
+    # Enable the copy feature
+    sorter.rename_duplicates = True
+    sorter.find_images()
+
+    # Run the copy process
+    sorter.run_parallel_sorting()
+
+    # Find sorted files
+    sorted_list = []
+    for root_path, __, files in os.walk(tmp_dst):
+        for file_name in files:
+            sorted_list.append(os.path.join(root_path, file_name))
+
+    # Check duplicate files were copied correctly
+    sorted_list.sort()
+    expected_result.sort()
+    print(f"sorted_list : {sorted_list}")
+    print(f"expected result : {expected_result}")
+    assert len(sorted_list) == len(expected_result)
     for result, exp_result in zip(sorted_list, expected_result):
         print(result, exp_result)
     assert all(
