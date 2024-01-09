@@ -2,6 +2,7 @@
 [![Build Status](https://jenkins.thorpe.work/buildStatus/icon?job=image-sorting-tool%2Fmain&subject=build%20status)](https://jenkins.thorpe.work/blue/organizations/jenkins/image-sorting-tool/activity)
 [![Python Checks](https://github.com/ThorpeJosh/image-sorting-tool/actions/workflows/python-test.yml/badge.svg)](https://github.com/ThorpeJosh/image-sorting-tool/actions/workflows/python-test.yml)
 [![PyPI version](https://img.shields.io/pypi/v/image-sorting-tool.svg)](https://pypi.org/project/image-sorting-tool/)
+[![PyPI version](https://img.shields.io/pypi/pyversions/image-sorting-tool.svg)](https://pypi.org/project/image-sorting-tool/)
 [![PyPI license](https://img.shields.io/pypi/l/image-sorting-tool.svg)](https://pypi.org/project/image-sorting-tool/)  
 ![Screenshot](https://raw.githubusercontent.com/ThorpeJosh/image-sorting-tool/main/assets/ImageSortingTool.png)
 This is a simple graphical tool to sort media into a structured folder. It is designed primarily for JPG images taken with a camera/phone but will also work with MP4, PNG and GIF media files. It works by finding all files in a chosen source directory (including sub-directories) and then based on the chosen sorting options, copies them into a structured destination.
@@ -34,16 +35,15 @@ No data in the source directory is altered. It only reads from the source, and t
 ## Installation
 The tool can be run on Linux, MacOS and Windows provided the following requirements are met
 ### Requirements
-* [Python 3.6](https://www.python.org/downloads/) or above
+* [Python](https://www.python.org/downloads/) (compatible versions are listed at top of readme)
 * python3-tk (Comes with Python 3, but may need installing separately in linux)
+* [pipx](https://pipx.pypa.io/) (highly recommended, but `pip` will also work)
 
-To check what version of python is installed, open a console and run:
-```bash
-python --version
-```
-If the python version is suitable then run the following to install the image-sorting-tool
-```bash
-pip install image-sorting-tool
+It is recommended to install `image-sorting-tool` with `pipx` as it will manage a dedicated environment and all paths for you, eliminating risk of dependency conflicts, etc.
+
+To install run the following
+```shell
+pipx install image-sorting-tool
 ```
 
 ## Usage
@@ -54,13 +54,12 @@ image-sorting-tool
 ## Upgrading
 Run the following to upgrade
 ```bash
-pip install --upgrade image-sorting-tool
+pipx upgrade image-sorting-tool
 ```
-
 ## Uninstalling
 Run the following to remove the tool from your machine
 ```bash
-pip uninstall image-sorting-tool
+pipx uninstall image-sorting-tool
 ```
 
 ## Development
