@@ -1,5 +1,6 @@
 """ Image sorting tool tkinter GUI module
 """
+
 import sys
 import logging
 import time

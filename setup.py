@@ -1,4 +1,5 @@
 """Setup module to allow packaging, distributing and pip installing"""
+
 from setuptools import setup
 from image_sorting_tool import __version__ as version
 
