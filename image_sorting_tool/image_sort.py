@@ -1,5 +1,6 @@
 """ Image sorting tool code that performs the parallel sorting operation
 """
+
 import logging
 import multiprocessing
 import os

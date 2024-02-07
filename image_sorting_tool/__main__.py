@@ -1,6 +1,7 @@
 """ Image sorting tool module. This script launches a tkinter GUI that allows images to be sorted
 based on their date taken.
 """
+
 import argparse
 import logging
 from image_sorting_tool.gui import GUI

@@ -1,5 +1,6 @@
 """Unit tests for the image_sort module
 """
+
 import os
 import sys
 import shutil
