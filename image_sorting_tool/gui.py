@@ -1,6 +1,7 @@
 """ Image sorting tool tkinter GUI module
 """
 
+import os
 import sys
 import logging
 import time
@@ -9,6 +10,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
 from tkinter import scrolledtext
+from tkinter import messagebox
 from image_sorting_tool.image_sort import ImageSort
 from image_sorting_tool.image_sort import JPEG_EXTENSIONS
 
@@ -259,9 +261,10 @@ class GUI(tk.Tk):
     def find_images(self):
         """Wrapper to call _find_images after botton state has changed"""
         logger.debug("Finding has been called from GUI")
-        self.get_extensions_to_sort()
-        self.find_button.config(text="Processing", state="disabled")
-        self.after(100, self._find_images)
+        if self.assert_paths_are_valid(ignore_output_path=True):
+            self.get_extensions_to_sort()
+            self.find_button.config(text="Processing", state="disabled")
+            self.after(100, self._find_images)
 
     def _find_images(self):
         """Run the image finding function from the image sorting tool."""
@@ -283,10 +286,11 @@ class GUI(tk.Tk):
     def sort_images(self):
         """Wrapper for calling _sort_images after button state has changed."""
         logger.debug("Sorting has been called from GUI")
-        self.sorting_tool.destination_dir = self.destination_dir_var.get()
-        self.start_button.config(text="Processing", state="disabled")
-        self.find_button.config(state="disabled")
-        self.after(100, self._sort_images)
+        if self.assert_paths_are_valid():
+            self.sorting_tool.destination_dir = self.destination_dir_var.get()
+            self.start_button.config(text="Processing", state="disabled")
+            self.find_button.config(state="disabled")
+            self.after(100, self._sort_images)
 
     def _sort_images(self):
         """Run the image sorting tool in a seperate thread so the GUI will continue functioning"""
@@ -330,8 +334,36 @@ class GUI(tk.Tk):
         if isinstance(directory, str):
             tk_var_to_change.set(directory)
 
+    def assert_paths_are_valid(self, ignore_output_path=False):
+        """Check to ensure destination dir is not a child of source dir, and both are valid"""
+        src_path, dst_path = self.source_dir_var.get(), self.destination_dir_var.get()
+        if not os.path.isdir(src_path):
+            logger.error("Input directory does not exist. '%s'", src_path)
+            messagebox.showerror(
+                "Input Folder Error", f"Input folder does not exist:\n{src_path}"
+            )
+            return False
+        if not ignore_output_path:
+            # No need to check output path for finding images
+            if not os.path.isdir(dst_path):
+                logger.error("Output directory does not exist. '%s'", dst_path)
+                messagebox.showerror(
+                    "Output Folder Error", f"Output folder does not exist:\n{dst_path}"
+                )
+                return False
+            if os.path.commonpath([src_path, dst_path]) == src_path:
+                logger.error(
+                    "Output directory cannot be a child of (or same as) input directory"
+                )
+                messagebox.showerror(
+                    "Output Folder Error",
+                    "Output folder needs to be located outside of the input folder",
+                )
+                return False
+        return True
+
     def enable_buttons(self, *args):
-        """Callback for a trace on the source_dir and desitnation_dir variables.
+        """Callback for a trace on the source_dir and destination_dir variables.
         Enables the start button if both variables contain valid filenames
         """
         # pylint: disable=(unused-argument) # Tkinter expects *args when running a trace
