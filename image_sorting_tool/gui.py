@@ -11,6 +11,7 @@ from tkinter import ttk
 from tkinter import filedialog
 from tkinter import scrolledtext
 from tkinter import messagebox
+from image_sorting_tool import __version__
 from image_sorting_tool.image_sort import ImageSort
 from image_sorting_tool.image_sort import JPEG_EXTENSIONS
 
@@ -77,7 +78,8 @@ class GUI(tk.Tk):
 
         # First row
         title_label = ttk.Label(
-            self, text="Image Sorting Tool - Maintained by Joshua Thorpe"
+            self,
+            text=f"Image Sorting Tool - Maintained by Joshua Thorpe - v{__version__}",
         )
         title_label.grid(column=0, row=title_row, columnspan=no_col, pady=10)
 
