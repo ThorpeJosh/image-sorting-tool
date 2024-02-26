@@ -353,7 +353,9 @@ class GUI(tk.Tk):
                     "Output Folder Error", f"Output folder does not exist:\n{dst_path}"
                 )
                 return False
-            if os.path.commonpath([src_path, dst_path]) == src_path:
+            if os.path.abspath(
+                os.path.commonpath([src_path, dst_path])
+            ) == os.path.abspath(src_path):
                 logger.error(
                     "Output directory cannot be a child of (or same as) input directory"
                 )
