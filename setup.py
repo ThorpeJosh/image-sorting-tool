@@ -6,7 +6,7 @@ from image_sorting_tool import __version__ as version
 REQUIREMENTS = ["Pillow~=10.3.0", "python-dateutil~=2.8"]
 DEV_REQUIREMENTS = {
     "dev": [
-        "pytest==8.2.*",
+        "pytest==8.3.*",
         "pylint==3.2.*",
         "black==24.4.*",
         "setuptools==70.0.*",
