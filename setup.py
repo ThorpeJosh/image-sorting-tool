@@ -3,7 +3,7 @@
 from setuptools import setup
 from image_sorting_tool import __version__ as version
 
-REQUIREMENTS = ["Pillow~=10.3.0", "python-dateutil~=2.8"]
+REQUIREMENTS = ["Pillow~=11.0.0", "python-dateutil~=2.8"]
 DEV_REQUIREMENTS = {
     "dev": [
         "pytest==8.3.*",
@@ -31,16 +31,16 @@ setup(
     include_package_data=True,
     install_requires=REQUIREMENTS,
     extras_require=DEV_REQUIREMENTS,
-    python_requires=">=3.8, <3.13",
+    python_requires=">=3.9, <3.14",
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
         "Operating System :: Microsoft :: Windows",
         "Operating System :: POSIX :: Linux",
         "Operating System :: MacOS",
