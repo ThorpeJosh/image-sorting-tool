@@ -1,4 +1,4 @@
 """Image-sorting-tool
 """
 
-__version__ = "1.1.2.dev"
+__version__ = "1.2.0.dev"
