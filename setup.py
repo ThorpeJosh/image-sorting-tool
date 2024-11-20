@@ -9,7 +9,7 @@ DEV_REQUIREMENTS = {
         "pytest==8.3.*",
         "pylint==3.3.*",
         "black==24.10.*",
-        "setuptools==75.2.*",
+        "setuptools==75.6.*",
     ]
 }
 
