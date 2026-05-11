@@ -14,14 +14,14 @@ classifiers = [
     "Operating System :: POSIX :: Linux",
     "Operating System :: MacOS",
 ]
-dependencies = ["Pillow~=11.0.0", "python-dateutil~=2.8"]
+dependencies = ["Pillow~=12.2", "python-dateutil~=2.9"]
 
 [project.gui-scripts]
 image-sorting-tool = "image_sorting_tool.__main__:run"
 
 [dependency-groups]
 dev = [
-    "pytest==8.3.*",
+    "pytest==9.0.*",
 ]
 
 [tool.setuptools]
