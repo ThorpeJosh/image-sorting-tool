@@ -12,8 +12,7 @@ from image_sorting_tool.image_sort import JPEG_EXTENSIONS
 
 # Skip GUI tests in CI on non-macOS platforms (since they lack a display)
 pytestmark = pytest.mark.skipif(
-    sys.platform != "darwin" and os.environ.get("CI") == "true",
-    reason="GUI tests require a display (macOS only in CI)"
+    sys.platform != "darwin" and os.environ.get("CI") == "true", reason="GUI tests require a display (macOS only in CI)"
 )
 
 
