@@ -13,6 +13,7 @@ from dateutil import parser
 from PIL import Image
 
 JPEG_EXTENSIONS = [".jpg", ".jpeg", ".jif", ".jpe", ".jfif", ".jfi", ".jp2", ".jpx"]
+MAX_DATETIME_DIGITS = 14
 
 logger = logging.getLogger("image-sorting-tool")
 
@@ -294,8 +295,8 @@ class ImageSort:
         numbers = [char for char in filename if char.isdigit()]
         numbers = "".join(numbers)
         # Truncate to 14 digits (YYYYMMDDHHMMSS) to prevent dateutil OverflowError on burst shots
-        if len(numbers) > 14:
-            numbers = numbers[:14]
+        if len(numbers) > MAX_DATETIME_DIGITS:
+            numbers = numbers[:MAX_DATETIME_DIGITS]
         # Extract datetime from numbers
         dtime = parser.parse(numbers)
         return dtime
