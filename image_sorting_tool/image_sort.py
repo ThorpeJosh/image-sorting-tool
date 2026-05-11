@@ -259,7 +259,7 @@ class ImageSort:
             else:
                 input_file.datetime = ImageSort._get_datetime_from_filename(input_file.fullpath)
 
-        except (ValueError, TypeError, KeyError, AttributeError, OSError) as error:
+        except Exception as error:
             logger.warning(
                 "Failed to get datetime for: %s from error: %s",
                 input_file.fullpath,
@@ -325,12 +325,16 @@ class ImageSort:
             destination_dir: the output folder selected by the user
             input_file: File object
         """
-        logger.debug("Copying: %s", input_file)
-        new_path = os.path.join(destination_dir, input_file.destination_relative_path)
-        os.makedirs(new_path, exist_ok=True)
-        destination_fullpath = os.path.join(new_path, input_file.sorted_filename)
-        shutil.copyfile(input_file.fullpath, destination_fullpath)
-        message_queue.put(f"Processed : {input_file.fullpath} --> {destination_fullpath}\n")
+        try:
+            logger.debug("Copying: %s", input_file)
+            new_path = os.path.join(destination_dir, input_file.destination_relative_path)
+            os.makedirs(new_path, exist_ok=True)
+            destination_fullpath = os.path.join(new_path, input_file.sorted_filename)
+            shutil.copyfile(input_file.fullpath, destination_fullpath)
+            message_queue.put(f"Processed : {input_file.fullpath} --> {destination_fullpath}\n")
+        except Exception as error:
+            logger.exception("Failed to copy file %s: %s", input_file.fullpath, error)
+            message_queue.put(f"ERROR copying {input_file.fullpath}: {error}\n")
 
     def read_queue(self) -> None:
         """Method to receive and log the messages from the workers in the pool."""
