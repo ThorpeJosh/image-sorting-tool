@@ -1,6 +1,6 @@
 [project]
 name = "image-sorting-tool"
-version = "1.3.0.dev"
+dynamic = ["version"]
 authors=[{name = "Joshua Thorpe"}]
 description="Graphical tool to sort images into a folder structure based on the date the images were taken"
 readme = "README.md"
@@ -25,11 +25,15 @@ dev = [
     "pytest-cov>=7.0.0",
 ]
 
-[tool.setuptools]
-packages=["image_sorting_tool"]
+[tool.setuptools.packages.find]
+include = ["image_sorting_tool"]
+exclude = ["image_sorting_tool.tests*"]
+
+[tool.setuptools.exclude-package-data]
+"image_sorting_tool" = ["tests/*", "tests/**/*"]
 
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools", "wheel", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
 [tool.ruff]
@@ -61,3 +65,5 @@ convention = "google"
 preview = false
 docstring-code-format = true
 line-ending = "lf"  # Unix \n line ending.
+
+[tool.setuptools_scm]
