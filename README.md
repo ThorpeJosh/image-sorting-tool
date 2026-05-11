@@ -78,7 +78,7 @@ Linting and unit tests should be checked before committing by running the follow
 uvx ruff format
 
 # Linting
-uvx ruff check .
+uvx ruff check --fix
 
 # Unit test on current environment python version
 uv run pytest

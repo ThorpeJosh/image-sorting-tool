@@ -1,0 +1,32 @@
+[project]
+name = "image-sorting-tool"
+version = "1.3.0.dev"
+authors=[{name = "Joshua Thorpe"}]
+description="Graphical tool to sort images into a folder structure based on the date the images were taken"
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.10, <3.15"
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+]
+dependencies = ["Pillow~=11.0.0", "python-dateutil~=2.8"]
+
+[project.gui-scripts]
+image-sorting-tool = "image_sorting_tool.__main__:run"
+
+[dependency-groups]
+dev = [
+    "pytest==8.3.*",
+]
+
+[tool.setuptools]
+packages=["image_sorting_tool"]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"

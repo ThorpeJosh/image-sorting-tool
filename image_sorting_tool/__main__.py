@@ -1,4 +1,4 @@
-""" Image sorting tool module. This script launches a tkinter GUI that allows images to be sorted
+"""Image sorting tool module. This script launches a tkinter GUI that allows images to be sorted
 based on their date taken.
 """
 

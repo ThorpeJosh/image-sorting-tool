@@ -1,19 +1,13 @@
-"""Unit tests for the image_sort module
-"""
+"""Unit tests for the image_sort module"""
 
 import os
-import sys
 import shutil
+
 import pytest
 
-# pylint: disable=wrong-import-position
-# pylint: disable=import-error
+from image_sorting_tool.image_sort import JPEG_EXTENSIONS, ImageSort
 
 tests_path = os.path.dirname(os.path.abspath(__file__))
-src_path = tests_path + "/../"
-sys.path.insert(0, src_path)
-from image_sort import ImageSort
-from image_sort import JPEG_EXTENSIONS
 
 MIXED_ASSETS_PATH = tests_path + "/../../assets/test_assets/mix"
 MIXED_TEST_ASSETS = [

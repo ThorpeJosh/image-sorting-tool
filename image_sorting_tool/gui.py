@@ -1,5 +1,4 @@
-""" Image sorting tool tkinter GUI module
-"""
+"""Image sorting tool tkinter GUI module"""
 
 import os
 import sys
@@ -20,12 +19,6 @@ logger = logging.getLogger("image-sorting-tool")
 
 class GUI(tk.Tk):
     """Tkinter GUI object"""
-
-    # pylint: disable=(too-many-instance-attributes)
-    # pylint: disable=(attribute-defined-outside-init)
-    # pylint does not play well with tkinter, often thinking variables are declared
-    # outside __init__ when they aren't.
-    # Also picks up on Widgets defined in their respective draw method
 
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
@@ -52,8 +45,6 @@ class GUI(tk.Tk):
 
     def draw_main(self):
         """Main window for GUI"""
-        # pylint: disable=too-many-locals
-        # pylint: disable=too-many-statements
 
         # Clear all widgets from root window
         for widget in self.winfo_children():
@@ -370,7 +361,6 @@ class GUI(tk.Tk):
         """Callback for a trace on the source_dir and destination_dir variables.
         Enables the start button if both variables contain valid filenames
         """
-        # pylint: disable=(unused-argument) # Tkinter expects *args when running a trace
         source_text = self.source_dir_var.get()
         destination_text = self.destination_dir_var.get()
 

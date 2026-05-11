@@ -1,5 +1,4 @@
-""" Image sorting tool code that performs the parallel sorting operation
-"""
+"""Image sorting tool code that performs the parallel sorting operation"""
 
 import logging
 import multiprocessing
@@ -293,7 +292,6 @@ class ImageSort:
             input_file: File object
         Returns: File object with datetime modified
         """
-        # pylint: disable=(broad-except)
         try:
             if input_file.extension.lower().endswith(tuple(JPEG_EXTENSIONS)):
                 # the file is JPEG so try extract datetime from EXIF
@@ -317,8 +315,6 @@ class ImageSort:
     @staticmethod
     def _get_datetime_from_exif(filepath):
         """Attempt to get the datetime an image was taken from the EXIF data"""
-        # pylint: disable=(protected-access) #This is the call to _getexif
-        # pylint: disable=(broad-except)
         try:
             date_taken = Image.open(filepath)._getexif()[36867]
             dtime = datetime.strptime(date_taken, "%Y:%m:%d %H:%M:%S")
