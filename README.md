@@ -65,21 +65,21 @@ pipx uninstall image-sorting-tool
 To contribute, clone this repo and then install the dev dependencies with
 ```shell
 # Installs package locally so code changes will affect behaviour
-pip install -e .[dev]
+uv sync
 
 #Launch with -vv flag for debug logs
-image-sorting-tool -vv 
+uv run image-sorting-tool -vv 
 ```
 
 ### Automated checks
 Linting and unit tests should be checked before committing by running the following:
 ```bash
 # Code formatting
-black  image-sorting-tool
+uvx ruff format
 
 # Linting
-pylint image_sorting_tool
+uvx ruff check .
 
 # Unit test on current environment python version
-pytest
+uv run pytest
 ```
