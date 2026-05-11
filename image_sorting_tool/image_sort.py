@@ -293,6 +293,9 @@ class ImageSort:
         filename = os.path.splitext(filename)[0]
         numbers = [char for char in filename if char.isdigit()]
         numbers = "".join(numbers)
+        # Truncate to 14 digits (YYYYMMDDHHMMSS) to prevent dateutil OverflowError on burst shots
+        if len(numbers) > 14:
+            numbers = numbers[:14]
         # Extract datetime from numbers
         dtime = parser.parse(numbers)
         return dtime
