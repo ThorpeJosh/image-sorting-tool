@@ -62,13 +62,17 @@ pipx uninstall image-sorting-tool
 ```
 
 ## Development
-To contribute, clone this repo and then install the dev dependencies with
+To contribute, clone this repo and then install the dev dependencies. Note that this project requires the system's `tkinter` library, so `uv` must be configured to use the system Python interpreter instead of its isolated builds.
+
 ```shell
+# Create a virtual environment using the system Python
+uv venv --python python
+
 # Installs package locally so code changes will affect behaviour
-uv sync
+uv sync --python python
 
 #Launch with -vv flag for debug logs
-uv run image-sorting-tool -vv 
+uv run --python python image-sorting-tool -vv 
 ```
 
 ### Automated checks
@@ -80,6 +84,6 @@ uvx ruff format
 # Linting
 uvx ruff check --fix
 
-# Unit test on current environment python version
-uv run pytest
+# Unit test on current environment python version with coverage
+uv run --python python pytest --cov=image_sorting_tool
 ```

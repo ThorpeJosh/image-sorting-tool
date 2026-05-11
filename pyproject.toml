@@ -22,6 +22,7 @@ image-sorting-tool = "image_sorting_tool.__main__:run"
 [dependency-groups]
 dev = [
     "pytest==9.0.*",
+    "pytest-cov>=6.0.0",
 ]
 
 [tool.setuptools]

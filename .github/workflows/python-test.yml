@@ -31,6 +31,6 @@ jobs:
       - name: Pylint
         run: pylint $(git ls-files '*.py')
       - name: Pytest
-        run: pytest -v
+        run: pytest -v --cov=image_sorting_tool
       - name: Black
         run: black --check --diff $(git ls-files '*.py')
