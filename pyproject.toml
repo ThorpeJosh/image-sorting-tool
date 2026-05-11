@@ -35,6 +35,7 @@ build-backend = "setuptools.build_meta"
 [tool.ruff]
 line-length = 120
 show-fixes = true
+preview = true  # required to enable DOC rules
 
 [tool.ruff.lint]
 preview = true

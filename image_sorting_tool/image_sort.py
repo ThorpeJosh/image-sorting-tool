@@ -86,7 +86,7 @@ class ImageSort:
         self.copy_unsorted = False
         self.sorting_complete = False
 
-    def find_images(self) -> None:  # noqa: PLR0912, PLR0915
+    def find_images(self) -> None:
         """The image finding function.
 
         Searches for all `self.ext_to_sort` in the source directory, including all subfolders.
@@ -96,11 +96,17 @@ class ImageSort:
         self.sort_list = []
         self.other_list = []
         self.failed_list = []
+        self.duplicates_list = []
 
-        # Find all files in the source_dir
         self._find_files()
+        self._extract_datetimes()
+        duplicate_hashmap = self._categorize_files()
+        self._process_duplicates(duplicate_hashmap)
+        self._log_find_stats()
+        self._update_gui_after_find()
 
-        # Extract datetimes from all files
+    def _extract_datetimes(self) -> None:
+        """Extract datetimes for all found files using multiprocessing."""
         logger.info("Extracting datetimes in a process pool")
         with multiprocessing.Pool(processes=self.threads_to_use) as pool:
             self.files_list = pool.map(self.get_datetime, self.files_list)
@@ -109,24 +115,13 @@ class ImageSort:
             "\n".join([f"{i.fullpath}:{i.datetime}" for i in self.files_list]),
         )
 
-        # Create a hashmap to keep track of duplicate datetimes
-        # Keys=datetime.datetime objects, Value=count of the Key
+    def _categorize_files(self) -> dict:
+        """Categorize files into sortable, failed, or other, and return duplicate counts."""
         duplicate_hashmap = {}
-
-        # Categorize the input files and set their destination dir
         for index, input_file in enumerate(self.files_list):
-            # Check if extension matches list user has requested to sort
             requested_sort = input_file.extension.lower().endswith(tuple(self.ext_to_sort))
             if input_file.datetime and requested_sort:
-                # Case: File is sortable and extension matches user selection
-
-                # Check and update duplicates hashmap
-                if input_file.datetime in duplicate_hashmap:
-                    duplicate_hashmap[input_file.datetime] += 1
-                else:
-                    duplicate_hashmap[input_file.datetime] = 1
-
-                # Set output filename and destination dir
+                duplicate_hashmap[input_file.datetime] = duplicate_hashmap.get(input_file.datetime, 0) + 1
                 input_file.generate_output_filename(sort_filename=True)
                 input_file.destination_relative_path = os.path.join(
                     str(input_file.datetime.year).zfill(4),
@@ -135,76 +130,48 @@ class ImageSort:
                 self.sort_list.append(index)
                 input_file.sort_flag = True
             elif (not input_file.datetime) and requested_sort:
-                # Case: File was requested to be sorted but datetime was not extracted
                 input_file.generate_output_filename(sort_filename=False)
                 input_file.destination_relative_path = "failed_to_sort"
                 self.failed_list.append(index)
                 input_file.sort_flag = True
             else:
-                # Case: file type was not requested to be sorted
                 input_file.generate_output_filename(sort_filename=False)
                 input_file.destination_relative_path = "other_files"
                 self.other_list.append(index)
                 if self.copy_unsorted:
                     input_file.sort_flag = True
+        return duplicate_hashmap
 
-        # Create a hashmap to keep track of duplicate index values
-        # Keys=datetime.datetime objects, Value=index
+    def _process_duplicates(self, duplicate_hashmap: dict) -> None:
+        """Identify duplicate datetimes and update filenames if requested."""
         duplicate_idx_hashmap = {}
-        # Generate a list of duplicates and calculate their duplicate index
         for index in self.sort_list:
             input_file = self.files_list[index]
-            if duplicate_hashmap[input_file.datetime] > 1:
-                # Datetime occured more than once. Duplicate
+            if duplicate_hashmap.get(input_file.datetime, 0) > 1:
                 self.duplicates_list.append(index)
-
-                # Check and update the index hashmap
-                if input_file.datetime in duplicate_idx_hashmap:
-                    duplicate_idx_hashmap[input_file.datetime] += 1
-                else:
-                    duplicate_idx_hashmap[input_file.datetime] = 1
-
-                # Set the input_file duplicate index
+                duplicate_idx_hashmap[input_file.datetime] = duplicate_idx_hashmap.get(input_file.datetime, 0) + 1
                 input_file.duplicate_idx = duplicate_idx_hashmap[input_file.datetime]
                 if self.rename_duplicates:
-                    # update output filename with prefix
                     input_file.update_filename_with_duplicate_postfix()
 
-        # Log Stats for files to be sorted
+    def _log_find_stats(self) -> None:
+        """Log statistics about the categorized files."""
         logger.info("Found %i files to sort in %s", len(self.sort_list), self.source_dir)
         logger.debug(
             "Sortable files :\n%s\n",
             "\n".join([i.fullpath for i in [self.files_list[j] for j in self.sort_list]]),
         )
-
-        # Log Stats for files that will fail to be sorted
-        logger.info(
-            "Found %i files that will Fail to sort in %s",
-            len(self.failed_list),
-            self.source_dir,
-        )
+        logger.info("Found %i files that will Fail to sort in %s", len(self.failed_list), self.source_dir)
         logger.debug(
             "Failed sorting files : \n%s\n",
             "\n".join([i.fullpath for i in [self.files_list[j] for j in self.failed_list]]),
         )
-
-        # Log Stats for files Not to be sorted
-        logger.info(
-            "Found %i files not matching sort options in %s",
-            len(self.other_list),
-            self.source_dir,
-        )
+        logger.info("Found %i files not matching sort options in %s", len(self.other_list), self.source_dir)
         logger.debug(
             "Sortable files not matching sort options :\n%s\n",
             "\n".join([i.fullpath for i in [self.files_list[j] for j in self.other_list]]),
         )
-
-        # Log stats regarding duplicate datetime files
-        logger.info(
-            "Found %i files with duplicate timestamps in %s",
-            len(self.duplicates_list),
-            self.source_dir,
-        )
+        logger.info("Found %i files with duplicate timestamps in %s", len(self.duplicates_list), self.source_dir)
         logger.debug(
             "Duplicate timestamp files : \n%s\n",
             "\n".join(
@@ -214,44 +181,48 @@ class ImageSort:
                 ]
             ),
         )
-        if self.tk_text_object is not None:
-            # Only run if a GUI object is provided
-            self.tk_text_object.configure(state="normal")  # Make writable
+
+    def _update_gui_after_find(self) -> None:
+        """Update the GUI text object with find results."""
+        if self.tk_text_object is None:
+            return
+
+        self.tk_text_object.configure(state="normal")  # Make writable
+        self.tk_text_object.insert(
+            tk.INSERT,
+            f"\nFound {len(self.sort_list)} images/videos meeting the above criteria "
+            f"that will successfully sort in {self.source_dir}\n",
+        )
+
+        if self.failed_list:
             self.tk_text_object.insert(
                 tk.INSERT,
-                f"\nFound {len(self.sort_list)} images/videos meeting the above criteria "
-                f"that will successfully sort in {self.source_dir}\n",
+                f"\nWARNING: Found {len(self.failed_list)} files meeting the above criteria that won't be sorted "
+                "due to no date-taken data being available, "
+                "these files will go into a 'failed_to_sort' folder during sorting\n",
             )
 
-            if self.failed_list:
-                self.tk_text_object.insert(
-                    tk.INSERT,
-                    f"\nWARNING: Found {len(self.failed_list)} files meeting the above criteria that won't be sorted "
-                    "due to no date-taken data being available, "
-                    "these files will go into a 'failed_to_sort' folder during sorting\n",
-                )
+        if self.other_list:
+            self.tk_text_object.insert(
+                tk.INSERT,
+                f"\nWARNING: Found {len(self.other_list)} files that won't be sorted (videos, docs, etc), "
+                "tick the 'Copy all other files' box above "
+                "if you want them copied to the destination "
+                "folder during sorting\n",
+            )
 
-            if self.other_list:
-                self.tk_text_object.insert(
-                    tk.INSERT,
-                    f"\nWARNING: Found {len(self.other_list)} files that won't be sorted (videos, docs, etc), "
-                    "tick the 'Copy all other files' box above "
-                    "if you want them copied to the destination "
-                    "folder during sorting\n",
-                )
-
-            if self.duplicates_list:
-                duplicate_ratio = len(self.duplicates_list) / len(self.sort_list)
-                self.tk_text_object.insert(
-                    tk.INSERT,
-                    f"\nWARNING: Found {len(self.duplicates_list)}({duplicate_ratio:.0%}) files "
-                    "with duplicate timestamps.\n"
-                    "You can enable 'Rename' option above to keep all duplicates "
-                    " or ignore this warning to filter out all duplicates.\n",
-                )
-            self.tk_text_object.insert(tk.INSERT, "\nPress 'Start' to begin sorting them....\n")
-            self.tk_text_object.yview(tk.END)
-            self.tk_text_object.configure(state="disabled")  # Read Only
+        if self.duplicates_list:
+            duplicate_ratio = len(self.duplicates_list) / len(self.sort_list)
+            self.tk_text_object.insert(
+                tk.INSERT,
+                f"\nWARNING: Found {len(self.duplicates_list)}({duplicate_ratio:.0%}) files "
+                "with duplicate timestamps.\n"
+                "You can enable 'Rename' option above to keep all duplicates "
+                " or ignore this warning to filter out all duplicates.\n",
+            )
+        self.tk_text_object.insert(tk.INSERT, "\nPress 'Start' to begin sorting them....\n")
+        self.tk_text_object.yview(tk.END)
+        self.tk_text_object.configure(state="disabled")  # Read Only
 
     def _find_files(self) -> None:
         """Generate a list of files found in the source_dir."""
@@ -288,7 +259,7 @@ class ImageSort:
             else:
                 input_file.datetime = ImageSort._get_datetime_from_filename(input_file.fullpath)
 
-        except Exception as error:
+        except (ValueError, TypeError, KeyError, AttributeError, OSError) as error:
             logger.warning(
                 "Failed to get datetime for: %s from error: %s",
                 input_file.fullpath,
@@ -304,7 +275,7 @@ class ImageSort:
             date_taken = Image.open(filepath)._getexif()[36867]
             dtime = datetime.strptime(date_taken, "%Y:%m:%d %H:%M:%S")
             return dtime
-        except Exception:
+        except (ValueError, TypeError, KeyError, AttributeError, OSError):
             # Reading from exif failed, try filename instead
             return ImageSort._get_datetime_from_filename(filepath)
 
