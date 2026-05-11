@@ -1,5 +1,7 @@
 """Unit tests for the gui module."""
 
+import os
+import sys
 from collections.abc import Generator
 from unittest.mock import patch
 
@@ -7,6 +9,12 @@ import pytest
 
 from image_sorting_tool.gui import GUI
 from image_sorting_tool.image_sort import JPEG_EXTENSIONS
+
+# Skip GUI tests in CI on non-macOS platforms (since they lack a display)
+pytestmark = pytest.mark.skipif(
+    sys.platform != "darwin" and os.environ.get("CI") == "true",
+    reason="GUI tests require a display (macOS only in CI)"
+)
 
 
 @pytest.fixture(name="gui_app")
