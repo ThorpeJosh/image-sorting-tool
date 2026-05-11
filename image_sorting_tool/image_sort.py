@@ -1,4 +1,4 @@
-"""Image sorting tool code that performs the parallel sorting operation"""
+"""Image sorting tool code that performs the parallel sorting operation."""
 
 import logging
 import multiprocessing
@@ -18,31 +18,31 @@ logger = logging.getLogger("image-sorting-tool")
 
 
 class File:
-    """File class for custom file metadata"""
+    """File class for custom file metadata."""
 
-    def __init__(self, fullpath):
+    def __init__(self, fullpath: str) -> None:
+        """Initialize File object."""
         self.fullpath = os.path.abspath(fullpath)
         self.filename = os.path.split(fullpath)[1]
         self.extension = os.path.splitext(fullpath)[1]
         self.datetime = None
-        self.destination_relative_path = (
-            None  # Relative path such as '<month>/<day>' or 'faild_to_sort'
-        )
+        self.destination_relative_path = None  # Relative path such as '<month>/<day>' or 'faild_to_sort'
         self.sorted_filename = None
         self.duplicate_idx = None
         self.sort_flag = False  # only sort this file if True
 
-    def __repr__(self):
-        """String to generate when __repr__ or __str__ methods are called"""
+    def __repr__(self) -> str:
+        """String to generate when __repr__ or __str__ methods are called."""
         return (
             f"File('{self.fullpath}','{self.filename}','{self.extension}', {self.datetime}, "
             f"'{self.destination_relative_path}', '{self.sorted_filename}', {self.duplicate_idx})"
         )
 
-    def generate_output_filename(self, sort_filename: bool):
-        """Generate the output filename
+    def generate_output_filename(self, sort_filename: bool) -> None:
+        """Generate the output filename.
+
         Arguments:
-            sort: if filename should be modified to the sorting structure or not
+            sort_filename: if filename should be modified to the sorting structure or not
         """
         if sort_filename:
             self.sorted_filename = (
@@ -53,12 +53,11 @@ class File:
         else:
             self.sorted_filename = self.filename
 
-    def update_filename_with_duplicate_postfix(self):
-        """Update the filename by appending a postfix for duplicate datetime files"""
+    def update_filename_with_duplicate_postfix(self) -> None:
+        """Update the filename by appending a postfix for duplicate datetime files."""
         if not self.duplicate_idx:
-            raise ValueError(
-                f"The 'duplicate_idx' must be set before a duplicate postfix can be added: {self}"
-            )
+            err_msg = f"The 'duplicate_idx' must be set before a duplicate postfix can be added: {self}"
+            raise ValueError(err_msg)
         self.sorted_filename = self.sorted_filename.replace(
             self.extension,
             f"_{self.duplicate_idx:0>3}{self.extension}",
@@ -66,9 +65,10 @@ class File:
 
 
 class ImageSort:
-    """Image sorting tool"""
+    """Image sorting tool."""
 
-    def __init__(self, source_dir, destination_dir, tk_text_object):
+    def __init__(self, source_dir: str, destination_dir: str, tk_text_object: object) -> None:
+        """Initialize ImageSort object."""
         self.source_dir = source_dir
         self.destination_dir = destination_dir
         self.tk_text_object = tk_text_object
@@ -86,9 +86,10 @@ class ImageSort:
         self.copy_unsorted = False
         self.sorting_complete = False
 
-    def find_images(self):
-        """The image finding function
-        Searches for all `self.ext_to_sort` in the source directory, including all subfolders
+    def find_images(self) -> None:  # noqa: PLR0912, PLR0915
+        """The image finding function.
+
+        Searches for all `self.ext_to_sort` in the source directory, including all subfolders.
         Returns a log message of the number of images found as well as storing the paths for later.
         """
         # Clear the category lists in case they were populated from a previous run
@@ -115,9 +116,7 @@ class ImageSort:
         # Categorize the input files and set their destination dir
         for index, input_file in enumerate(self.files_list):
             # Check if extension matches list user has requested to sort
-            requested_sort = input_file.extension.lower().endswith(
-                tuple(self.ext_to_sort)
-            )
+            requested_sort = input_file.extension.lower().endswith(tuple(self.ext_to_sort))
             if input_file.datetime and requested_sort:
                 # Case: File is sortable and extension matches user selection
 
@@ -172,14 +171,10 @@ class ImageSort:
                     input_file.update_filename_with_duplicate_postfix()
 
         # Log Stats for files to be sorted
-        logger.info(
-            "Found %i files to sort in %s", len(self.sort_list), self.source_dir
-        )
+        logger.info("Found %i files to sort in %s", len(self.sort_list), self.source_dir)
         logger.debug(
             "Sortable files :\n%s\n",
-            "\n".join(
-                [i.fullpath for i in [self.files_list[j] for j in self.sort_list]]
-            ),
+            "\n".join([i.fullpath for i in [self.files_list[j] for j in self.sort_list]]),
         )
 
         # Log Stats for files that will fail to be sorted
@@ -190,9 +185,7 @@ class ImageSort:
         )
         logger.debug(
             "Failed sorting files : \n%s\n",
-            "\n".join(
-                [i.fullpath for i in [self.files_list[j] for j in self.failed_list]]
-            ),
+            "\n".join([i.fullpath for i in [self.files_list[j] for j in self.failed_list]]),
         )
 
         # Log Stats for files Not to be sorted
@@ -203,9 +196,7 @@ class ImageSort:
         )
         logger.debug(
             "Sortable files not matching sort options :\n%s\n",
-            "\n".join(
-                [i.fullpath for i in [self.files_list[j] for j in self.other_list]]
-            ),
+            "\n".join([i.fullpath for i in [self.files_list[j] for j in self.other_list]]),
         )
 
         # Log stats regarding duplicate datetime files
@@ -258,14 +249,12 @@ class ImageSort:
                     "You can enable 'Rename' option above to keep all duplicates "
                     " or ignore this warning to filter out all duplicates.\n",
                 )
-            self.tk_text_object.insert(
-                tk.INSERT, "\nPress 'Start' to begin sorting them....\n"
-            )
+            self.tk_text_object.insert(tk.INSERT, "\nPress 'Start' to begin sorting them....\n")
             self.tk_text_object.yview(tk.END)
             self.tk_text_object.configure(state="disabled")  # Read Only
 
-    def _find_files(self):
-        """Generate a list of files found in the source_dir"""
+    def _find_files(self) -> None:
+        """Generate a list of files found in the source_dir."""
         for root_path, __, files in os.walk(self.source_dir):
             for file_name in files:
                 self.files_list.append(File(os.path.join(root_path, file_name)))
@@ -286,7 +275,7 @@ class ImageSort:
 
     @staticmethod
     def get_datetime(input_file: File) -> File:
-        """Attempt to extract datetime from a file
+        """Attempt to extract datetime from a file.
 
         Arguments:
             input_file: File object
@@ -295,13 +284,9 @@ class ImageSort:
         try:
             if input_file.extension.lower().endswith(tuple(JPEG_EXTENSIONS)):
                 # the file is JPEG so try extract datetime from EXIF
-                input_file.datetime = ImageSort._get_datetime_from_exif(
-                    input_file.fullpath
-                )
+                input_file.datetime = ImageSort._get_datetime_from_exif(input_file.fullpath)
             else:
-                input_file.datetime = ImageSort._get_datetime_from_filename(
-                    input_file.fullpath
-                )
+                input_file.datetime = ImageSort._get_datetime_from_filename(input_file.fullpath)
 
         except Exception as error:
             logger.warning(
@@ -313,8 +298,8 @@ class ImageSort:
         return input_file
 
     @staticmethod
-    def _get_datetime_from_exif(filepath):
-        """Attempt to get the datetime an image was taken from the EXIF data"""
+    def _get_datetime_from_exif(filepath: str) -> object:
+        """Attempt to get the datetime an image was taken from the EXIF data."""
         try:
             date_taken = Image.open(filepath)._getexif()[36867]
             dtime = datetime.strptime(date_taken, "%Y:%m:%d %H:%M:%S")
@@ -324,14 +309,15 @@ class ImageSort:
             return ImageSort._get_datetime_from_filename(filepath)
 
     @staticmethod
-    def _get_datetime_from_filename(filepath):
-        """Attempt to get the datetime of a file from it's filename"""
+    def _get_datetime_from_filename(filepath: str) -> object:
+        """Attempt to get the datetime of a file from it's filename."""
         filename = os.path.split(filepath)[1]
         # See if the years from 1970-2099 exist in the filename
         valid_years = [str(year) for year in range(1970, 2100)]
         in_years = [year in filename for year in valid_years]
         if sum(in_years) == 0:
-            raise ValueError(f"No year found in {filename}")
+            err_msg = f"No year found in {filename}"
+            raise ValueError(err_msg)
         # Extract only numbers from the filename
         filename = os.path.splitext(filename)[0]
         numbers = [char for char in filename if char.isdigit()]
@@ -340,8 +326,9 @@ class ImageSort:
         dtime = parser.parse(numbers)
         return dtime
 
-    def run_parallel_sorting(self):
+    def run_parallel_sorting(self) -> None:
         """Creates a pool of workers and runs the image sorting across multiple threads.
+
         The pool size is equal to half the number of available threads the machine has.
         SSD's benifit from multithreading while HDD's will generally be the bottleneck.
         """
@@ -359,8 +346,9 @@ class ImageSort:
         logger.info("Sorting Completed")
 
     @staticmethod
-    def copy_file(message_queue, destination_dir: str, input_file: File):
+    def copy_file(message_queue: object, destination_dir: str, input_file: File) -> None:
         """Copy method that copies files into the structured output folder.
+
         Arguments:
             message_queue: a Queue to put log messages on for the GUI to display
             destination_dir: the output folder selected by the user
@@ -371,12 +359,10 @@ class ImageSort:
         os.makedirs(new_path, exist_ok=True)
         destination_fullpath = os.path.join(new_path, input_file.sorted_filename)
         shutil.copyfile(input_file.fullpath, destination_fullpath)
-        message_queue.put(
-            f"Processed : {input_file.fullpath} --> {destination_fullpath}\n"
-        )
+        message_queue.put(f"Processed : {input_file.fullpath} --> {destination_fullpath}\n")
 
-    def read_queue(self):
-        """Method to receive and log the messages from the workers in the pool"""
+    def read_queue(self) -> None:
+        """Method to receive and log the messages from the workers in the pool."""
         while True:
             message = self.message_queue.get()
             if message == "kill":
@@ -388,8 +374,8 @@ class ImageSort:
                 self.tk_text_object.yview(tk.END)
                 self.tk_text_object.configure(state="disabled")  # Read Only
 
-    def cleanup(self):
-        """Cleanup function that kills any threads spawned on instance creation"""
+    def cleanup(self) -> None:
+        """Cleanup function that kills any threads spawned on instance creation."""
         logger.debug("Running cleanup on queue thread")
         self.message_queue.put("kill")
         time.sleep(0.2)

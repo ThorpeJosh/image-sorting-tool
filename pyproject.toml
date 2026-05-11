@@ -21,8 +21,8 @@ image-sorting-tool = "image_sorting_tool.__main__:run"
 
 [dependency-groups]
 dev = [
-    "pytest==9.0.*",
-    "pytest-cov>=6.0.0",
+    "pytest>=9.0.0",
+    "pytest-cov>=7.0.0",
 ]
 
 [tool.setuptools]
@@ -31,3 +31,32 @@ packages=["image_sorting_tool"]
 [build-system]
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[tool.ruff]
+line-length = 120
+show-fixes = true
+
+[tool.ruff.lint]
+preview = true
+explicit-preview-rules = true
+select = ["ANN", "ASYNC", "B", "C4", "COM", "D", "DOC", "E", "EM", "EXE", "F", "FAST", "I", "INP", "PL", "S", "T", "N", "Q", "UP", "W"]
+ignore = ["COM812"]
+
+[tool.ruff.lint.extend-per-file-ignores]
+"**/tests/**/*.py" = [
+    "S101", # Allow assertions in tests
+    "ARG", # Unused function args, triggered by fixtures
+    "ANN001", # Missing type annotations for func arg
+    "FBT", # Allow booleans as positional arguments in tests
+    "PLR2004", # Allow magic value used in comparison
+    "D107", # Missing docstring in __init__ for test helper classes
+    "D102", # Missing docstring in public method for test helper classes
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.format]
+preview = false
+docstring-code-format = true
+line-ending = "lf"  # Unix \n line ending.

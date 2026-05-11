@@ -1,34 +1,32 @@
-"""Image sorting tool tkinter GUI module"""
+"""Image sorting tool tkinter GUI module."""
 
+import logging
 import os
 import sys
-import logging
-import time
 import threading
+import time
 import tkinter as tk
-from tkinter import ttk
-from tkinter import filedialog
-from tkinter import scrolledtext
-from tkinter import messagebox
+from tkinter import filedialog, messagebox, scrolledtext, ttk
+
 from image_sorting_tool import __version__
-from image_sorting_tool.image_sort import ImageSort
-from image_sorting_tool.image_sort import JPEG_EXTENSIONS
+from image_sorting_tool.image_sort import JPEG_EXTENSIONS, ImageSort
 
 logger = logging.getLogger("image-sorting-tool")
 
 
 class GUI(tk.Tk):
-    """Tkinter GUI object"""
+    """Tkinter GUI object."""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: object, **kwargs: object) -> None:
+        """Initialize the GUI."""
         tk.Tk.__init__(self, *args, **kwargs)
         self.title("Image Sorting Tool")
         self.init_vars()
-        self.source_dir_var.trace("w", self.enable_buttons)
-        self.destination_dir_var.trace("w", self.enable_buttons)
+        self.source_dir_var.trace_add("write", self.enable_buttons)
+        self.destination_dir_var.trace_add("write", self.enable_buttons)
 
-    def init_vars(self):
-        """Method called during __init__ that initialises some user variables and parameters"""
+    def init_vars(self) -> None:
+        """Method called during __init__ that initialises some user variables and parameters."""
         self.source_dir_var = tk.StringVar()
         self.destination_dir_var = tk.StringVar()
         self.jpeg_sort = tk.IntVar(value=1)  # Preselect the JPEG option
@@ -43,9 +41,8 @@ class GUI(tk.Tk):
         self.find_flag = False  # True if the image finding function has run.
         self.ext_to_sort = []
 
-    def draw_main(self):
-        """Main window for GUI"""
-
+    def draw_main(self) -> None:  # noqa: PLR0915
+        """Main window for GUI."""
         # Clear all widgets from root window
         for widget in self.winfo_children():
             widget.destroy()
@@ -80,9 +77,7 @@ class GUI(tk.Tk):
             "and creates a sorted copy of the files in the 'Output Folder'."
         )
         description_message = tk.Message(self, text=description_message_text, width=700)
-        description_message.grid(
-            column=0, row=description_row, columnspan=no_col, pady=0
-        )
+        description_message.grid(column=0, row=description_row, columnspan=no_col, pady=0)
         structure_text = (
             "The 'Output Folder' structure follows 'yyyy/mm/yyyymmdd_HHMMSS.jpg', for example:\n"
             "    ├── 2019\n"
@@ -96,9 +91,7 @@ class GUI(tk.Tk):
             "          └── 20200301_110330.jpg"
         )
         sample_structure_message = tk.Message(self, text=structure_text, width=500)
-        sample_structure_message.grid(
-            column=0, row=sample_structure_row, columnspan=no_col, pady=5
-        )
+        sample_structure_message.grid(column=0, row=sample_structure_row, columnspan=no_col, pady=5)
 
         # Filetype options frame
         file_type_options_frame = ttk.LabelFrame(self, text="File types to sort:")
@@ -146,8 +139,7 @@ class GUI(tk.Tk):
 
         # Checkbox for renaming duplicate files
         duplicate_checkbox_text = (
-            "Rename images with duplicate 'date taken' times to "
-            "'<date_taken>_1.jpg', '<date taken>_2.jpg'..."
+            "Rename images with duplicate 'date taken' times to '<date_taken>_1.jpg', '<date taken>_2.jpg'..."
             # "Useful for burst shots or if you fear duplicates exist with different resolutions. "
             # "Default behaviour is to overwrite duplicates."
         )
@@ -161,8 +153,7 @@ class GUI(tk.Tk):
 
         # Checkbox for copying unsortable files
         unsortable_checkbox_text = (
-            "Copy all other files (documents, binaries, etc) to the "
-            "destination directory under an 'other_files' folder"
+            "Copy all other files (documents, binaries, etc) to the destination directory under an 'other_files' folder"
         )
         unsortable_checkbox = ttk.Checkbutton(
             extra_options_frame,
@@ -173,24 +164,16 @@ class GUI(tk.Tk):
         unsortable_checkbox.pack(anchor="w")
 
         # Source Directory Widgets
-        ttk.Label(self, text="Input Folder").grid(
-            column=0, row=source_dir_row, padx=5, sticky="W"
-        )
-        self.source_textbox = ttk.Entry(
-            self, textvariable=self.source_dir_var, width=self.textbox_width
-        )
+        ttk.Label(self, text="Input Folder").grid(column=0, row=source_dir_row, padx=5, sticky="W")
+        self.source_textbox = ttk.Entry(self, textvariable=self.source_dir_var, width=self.textbox_width)
         self.source_textbox.grid(column=1, row=source_dir_row, sticky="EW")
-        ttk.Button(
-            self, text="Browse", command=lambda: self.get_directory(self.source_dir_var)
-        ).grid(column=2, row=source_dir_row, padx=5, sticky="E")
+        ttk.Button(self, text="Browse", command=lambda: self.get_directory(self.source_dir_var)).grid(
+            column=2, row=source_dir_row, padx=5, sticky="E"
+        )
 
         # Output File Widgets
-        ttk.Label(self, text="Output Folder").grid(
-            column=0, row=description_dir_row, padx=5, sticky="W"
-        )
-        self.destination_textbox = ttk.Entry(
-            self, textvariable=self.destination_dir_var, width=self.textbox_width
-        )
+        ttk.Label(self, text="Output Folder").grid(column=0, row=description_dir_row, padx=5, sticky="W")
+        self.destination_textbox = ttk.Entry(self, textvariable=self.destination_dir_var, width=self.textbox_width)
         self.destination_textbox.grid(column=1, row=description_dir_row, sticky="EW")
         ttk.Button(
             self,
@@ -200,15 +183,11 @@ class GUI(tk.Tk):
 
         # Begin Button
         self.start_button = ttk.Button(self, text="Start", command=self.sort_images)
-        self.start_button.grid(
-            column=no_col - 1, row=button_row, padx=5, pady=5, sticky="EW"
-        )
+        self.start_button.grid(column=no_col - 1, row=button_row, padx=5, pady=5, sticky="EW")
         self.start_button.config(state="disabled")
 
         # Find Images Button
-        self.find_button = ttk.Button(
-            self, text="Analyse Source Directory", command=self.find_images
-        )
+        self.find_button = ttk.Button(self, text="Analyse Source Directory", command=self.find_images)
         self.find_button.grid(column=no_col - 2, row=button_row, padx=5, pady=5)
         self.find_button.config(state="disabled")
 
@@ -217,9 +196,7 @@ class GUI(tk.Tk):
         quit_button.grid(column=0, row=button_row, padx=5, pady=5, sticky="EW")
 
         # Scrolled Text Widget
-        self.scroll = scrolledtext.ScrolledText(
-            self, width=self.scroll_width, height=self.scroll_height, wrap=tk.WORD
-        )
+        self.scroll = scrolledtext.ScrolledText(self, width=self.scroll_width, height=self.scroll_height, wrap=tk.WORD)
         self.scroll.grid(
             column=0,
             row=scroll_text_row,
@@ -231,15 +208,12 @@ class GUI(tk.Tk):
         self.rowconfigure(scroll_text_row, weight=1)
         self.scroll.insert(
             tk.INSERT,
-            (
-                "Welcome, Enter a source and destination directory, "
-                'then click "Analyse Source Directory"\n',
-            ),
+            ('Welcome, Enter a source and destination directory, then click "Analyse Source Directory"\n',),
         )
         self.scroll.configure(state="disabled")  # Read Only
 
-    def get_extensions_to_sort(self):
-        """Checks the state of all the file type checkboxes and updates the list accordingly"""
+    def get_extensions_to_sort(self) -> None:
+        """Checks the state of all the file type checkboxes and updates the list accordingly."""
         self.ext_to_sort = []
         if self.jpeg_sort.get():
             self.ext_to_sort.extend(JPEG_EXTENSIONS)
@@ -251,19 +225,17 @@ class GUI(tk.Tk):
             self.ext_to_sort.append(".mp4")
         logger.debug("Extensions to sort: %s", self.ext_to_sort)
 
-    def find_images(self):
-        """Wrapper to call _find_images after botton state has changed"""
+    def find_images(self) -> None:
+        """Wrapper to call _find_images after botton state has changed."""
         logger.debug("Finding has been called from GUI")
         if self.assert_paths_are_valid(ignore_output_path=True):
             self.get_extensions_to_sort()
             self.find_button.config(text="Processing", state="disabled")
             self.after(100, self._find_images)
 
-    def _find_images(self):
+    def _find_images(self) -> None:
         """Run the image finding function from the image sorting tool."""
-        self.sorting_tool = ImageSort(
-            self.source_dir_var.get(), self.destination_dir_var.get(), self.scroll
-        )
+        self.sorting_tool = ImageSort(self.source_dir_var.get(), self.destination_dir_var.get(), self.scroll)
         self.sorting_tool.ext_to_sort = self.ext_to_sort
         if self.copy_other_files.get():
             logger.info("Copy 'other files' has been selected")
@@ -276,7 +248,7 @@ class GUI(tk.Tk):
         self.find_flag = True
         self.enable_buttons()
 
-    def sort_images(self):
+    def sort_images(self) -> None:
         """Wrapper for calling _sort_images after button state has changed."""
         logger.debug("Sorting has been called from GUI")
         if self.assert_paths_are_valid():
@@ -285,16 +257,15 @@ class GUI(tk.Tk):
             self.find_button.config(state="disabled")
             self.after(100, self._sort_images)
 
-    def _sort_images(self):
-        """Run the image sorting tool in a seperate thread so the GUI will continue functioning"""
-        threading.Thread(
-            target=self.sorting_tool.run_parallel_sorting, daemon=True
-        ).start()
+    def _sort_images(self) -> None:
+        """Run the image sorting tool in a seperate thread so the GUI will continue functioning."""
+        threading.Thread(target=self.sorting_tool.run_parallel_sorting, daemon=True).start()
         threading.Thread(target=self._reset_buttons, daemon=True).start()
 
-    def _reset_buttons(self):
-        """Waits for sorting process to finish and then reactivates the start button and prints
-        a message to the text window
+    def _reset_buttons(self) -> None:
+        """Waits for sorting process to finish and then reactivates the start button and prints.
+
+        A message to the text window.
         """
         while not self.sorting_tool.sorting_complete:
             time.sleep(1)
@@ -306,8 +277,8 @@ class GUI(tk.Tk):
         self.scroll.yview(tk.END)
         self.scroll.configure(state="disabled")  # Read Only
 
-    def _quit(self):
-        """Quit the program"""
+    def _quit(self) -> None:
+        """Quit the program."""
         logger.info("Quiting Image Sorting Tool")
         try:
             self.sorting_tool.cleanup()
@@ -318,8 +289,9 @@ class GUI(tk.Tk):
         sys.exit()
 
     @staticmethod
-    def get_directory(tk_var_to_change):
+    def get_directory(tk_var_to_change: tk.StringVar) -> None:
         """Launches a native browse window to allow user to select a directory.
+
         Sets the input as the chosen directoy.
         """
         directory = filedialog.askdirectory(title="Select a directory")
@@ -327,29 +299,21 @@ class GUI(tk.Tk):
         if isinstance(directory, str):
             tk_var_to_change.set(directory)
 
-    def assert_paths_are_valid(self, ignore_output_path=False):
-        """Check to ensure destination dir is not a child of source dir, and both are valid"""
+    def assert_paths_are_valid(self, ignore_output_path: bool = False) -> bool:
+        """Check to ensure destination dir is not a child of source dir, and both are valid."""
         src_path, dst_path = self.source_dir_var.get(), self.destination_dir_var.get()
         if not os.path.isdir(src_path):
             logger.error("Input directory does not exist. '%s'", src_path)
-            messagebox.showerror(
-                "Input Folder Error", f"Input folder does not exist:\n{src_path}"
-            )
+            messagebox.showerror("Input Folder Error", f"Input folder does not exist:\n{src_path}")
             return False
         if not ignore_output_path:
             # No need to check output path for finding images
             if not os.path.isdir(dst_path):
                 logger.error("Output directory does not exist. '%s'", dst_path)
-                messagebox.showerror(
-                    "Output Folder Error", f"Output folder does not exist:\n{dst_path}"
-                )
+                messagebox.showerror("Output Folder Error", f"Output folder does not exist:\n{dst_path}")
                 return False
-            if os.path.abspath(
-                os.path.commonpath([src_path, dst_path])
-            ) == os.path.abspath(src_path):
-                logger.error(
-                    "Output directory cannot be a child of (or same as) input directory"
-                )
+            if os.path.abspath(os.path.commonpath([src_path, dst_path])) == os.path.abspath(src_path):
+                logger.error("Output directory cannot be a child of (or same as) input directory")
                 messagebox.showerror(
                     "Output Folder Error",
                     "Output folder needs to be located outside of the input folder",
@@ -357,9 +321,10 @@ class GUI(tk.Tk):
                 return False
         return True
 
-    def enable_buttons(self, *args):
+    def enable_buttons(self, *args: object) -> None:
         """Callback for a trace on the source_dir and destination_dir variables.
-        Enables the start button if both variables contain valid filenames
+
+        Enables the start button if both variables contain valid filenames.
         """
         source_text = self.source_dir_var.get()
         destination_text = self.destination_dir_var.get()
@@ -370,16 +335,9 @@ class GUI(tk.Tk):
         # Offset to account for non-uniform letter spacing
         offset = 0
 
-        if (
-            len(source_text) > self.textbox_width + offset
-            or len(destination_text) > self.textbox_width + offset
-        ):
-            self.source_textbox.config(
-                width=max(len(source_text), len(destination_text))
-            )
-            self.destination_textbox.config(
-                width=max(len(source_text), len(destination_text))
-            )
+        if len(source_text) > self.textbox_width + offset or len(destination_text) > self.textbox_width + offset:
+            self.source_textbox.config(width=max(len(source_text), len(destination_text)))
+            self.destination_textbox.config(width=max(len(source_text), len(destination_text)))
 
         if source_text and destination_text and self.find_flag:
             # If both directories have been supplied and the images have been found, allow sorting
