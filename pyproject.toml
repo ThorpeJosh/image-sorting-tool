@@ -65,4 +65,3 @@ convention = "google"
 preview = false
 docstring-code-format = true
 line-ending = "lf"  # Unix \n line ending.
-
