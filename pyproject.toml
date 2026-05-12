@@ -4,10 +4,9 @@ dynamic = ["version"]
 authors=[{name = "Joshua Thorpe"}]
 description="Graphical tool to sort images into a folder structure based on the date the images were taken"
 readme = "README.md"
-license = {file = "LICENSE"}
+license = "MIT"
 requires-python = ">=3.10, <3.15"
 classifiers = [
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Operating System :: Microsoft :: Windows",
@@ -27,7 +26,7 @@ dev = [
 
 [tool.setuptools.packages.find]
 include = ["image_sorting_tool"]
-exclude = ["image_sorting_tool.tests*"]
+exclude = ["image_sorting_tool.tests", "image_sorting_tool.tests.*"]
 
 [tool.setuptools.exclude-package-data]
 "image_sorting_tool" = ["tests/*", "tests/**/*"]
