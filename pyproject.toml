@@ -1,0 +1,67 @@
+[project]
+name = "image-sorting-tool"
+dynamic = ["version"]
+authors=[{name = "Joshua Thorpe"}]
+description="Graphical tool to sort images into a folder structure based on the date the images were taken"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10, <3.15"
+classifiers = [
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+]
+dependencies = ["Pillow~=12.2", "python-dateutil~=2.9"]
+
+[project.gui-scripts]
+image-sorting-tool = "image_sorting_tool.__main__:run"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.0",
+    "pytest-cov>=7.0.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["image_sorting_tool"]
+exclude = ["image_sorting_tool.tests", "image_sorting_tool.tests.*"]
+
+[tool.setuptools.exclude-package-data]
+"image_sorting_tool" = ["tests/*", "tests/**/*"]
+
+[build-system]
+requires = ["setuptools>=80", "setuptools-scm>=10"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+
+[tool.ruff]
+line-length = 120
+show-fixes = true
+
+[tool.ruff.lint]
+preview = true
+explicit-preview-rules = true
+select = ["ANN", "ASYNC", "B", "C4", "COM", "D", "DOC", "E", "EM", "EXE", "F", "FAST", "I", "INP", "PL", "S", "T", "N", "Q", "UP", "W"]
+ignore = ["COM812"]
+
+[tool.ruff.lint.extend-per-file-ignores]
+"**/tests/**/*.py" = [
+    "S101", # Allow assertions in tests
+    "ARG", # Unused function args, triggered by fixtures
+    "ANN001", # Missing type annotations for func arg
+    "FBT", # Allow booleans as positional arguments in tests
+    "PLR2004", # Allow magic value used in comparison
+    "D107", # Missing docstring in __init__ for test helper classes
+    "D102", # Missing docstring in public method for test helper classes
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.format]
+preview = false
+docstring-code-format = true
+line-ending = "lf"  # Unix \n line ending.

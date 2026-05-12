@@ -1,48 +1,55 @@
-"""Unit tests for the image_sort module
-"""
+"""Unit tests for the image_sort module."""
 
 import os
-import sys
 import shutil
+from collections.abc import Generator
+from unittest.mock import MagicMock
+
 import pytest
 
-# pylint: disable=wrong-import-position
-# pylint: disable=import-error
+from image_sorting_tool.image_sort import JPEG_EXTENSIONS, File, ImageSort
 
 tests_path = os.path.dirname(os.path.abspath(__file__))
-src_path = tests_path + "/../"
-sys.path.insert(0, src_path)
-from image_sort import ImageSort
-from image_sort import JPEG_EXTENSIONS
 
 MIXED_ASSETS_PATH = tests_path + "/../../assets/test_assets/mix"
-MIXED_TEST_ASSETS = [
-    os.path.join(MIXED_ASSETS_PATH, asset) for asset in os.listdir(MIXED_ASSETS_PATH)
-]
+MIXED_TEST_ASSETS = [os.path.join(MIXED_ASSETS_PATH, asset) for asset in os.listdir(MIXED_ASSETS_PATH)]
 BURST_ASSETS_PATH = tests_path + "/../../assets/test_assets/burst"
-BURST_TEST_ASSETS = [
-    os.path.join(BURST_ASSETS_PATH, asset) for asset in os.listdir(BURST_ASSETS_PATH)
-]
+BURST_TEST_ASSETS = [os.path.join(BURST_ASSETS_PATH, asset) for asset in os.listdir(BURST_ASSETS_PATH)]
 
 
 @pytest.fixture(name="test_setup")
-def fixture_setup_tmp_dirs_and_sorter(tmp_path):
-    """
-    Creates a tmp directory and a sorter initialized with these directories
-    It then cleans up sorter after test completes
+def fixture_setup_tmp_dirs_and_sorter(tmp_path) -> Generator[tuple[str, str, ImageSort], None, None]:
+    """Creates a tmp directory and a sorter initialized with these directories.
+
+    It then cleans up sorter after test completes.
     """
     # Create tmp directories for the test
     tmp_src = os.path.abspath(os.path.join(tmp_path, "src/"))
     tmp_dst = os.path.abspath(os.path.join(tmp_path, "dst/"))
     os.mkdir(tmp_src)
     os.mkdir(tmp_dst)
-    sorter = ImageSort(tmp_src, tmp_dst, None)
+
+    mock_tk_text = MagicMock()
+    sorter = ImageSort(tmp_src, tmp_dst, mock_tk_text)
 
     # Run test
     yield tmp_src, tmp_dst, sorter
 
     # Cleanup child threads
     sorter.cleanup()
+
+
+def test_file_repr() -> None:
+    """Test the string representation of the File object."""
+    file_obj = File("dummy/path/file.jpg")
+    assert repr(file_obj).startswith("File(")
+
+
+def test_get_datetime_exception() -> None:
+    """Test exception handling when extracting datetime fails entirely."""
+    file_obj = File("bad_file_no_year_or_exif.jpg")
+    result = ImageSort.get_datetime(file_obj)
+    assert result.datetime is None
 
 
 @pytest.mark.parametrize(
@@ -74,16 +81,13 @@ def fixture_setup_tmp_dirs_and_sorter(tmp_path):
         ),
     ],
 )  # Tests each filetype indiviually and then collectively
-def test_sort_images(test_setup, test_extensions, expected_sort):
-    """Test that the tool can sort the images in the test assets directory"""
-
+def test_sort_images(test_setup, test_extensions, expected_sort) -> None:
+    """Test that the tool can sort the images in the test assets directory."""
     # Expand test setup
     tmp_src, tmp_dst, sorter = test_setup
 
     # Add the tmp directory to the ground truths
-    sorted_gt = [
-        os.path.abspath(os.path.join(tmp_dst, gt_path)) for gt_path in expected_sort
-    ]
+    sorted_gt = [os.path.abspath(os.path.join(tmp_dst, gt_path)) for gt_path in expected_sort]
 
     # Copy test assets to a tmp_path
     for asset in MIXED_TEST_ASSETS:
@@ -115,8 +119,8 @@ def test_sort_images(test_setup, test_extensions, expected_sort):
         ([]),
     ],
 )
-def test_find_other_files(test_setup, test_extensions):
-    """Test that the tool can find unsorted files in the test assets directory"""
+def test_find_other_files(test_setup, test_extensions) -> None:
+    """Test that the tool can find unsorted files in the test assets directory."""
     # Expand test setup
     tmp_path, _, sorter = test_setup
 
@@ -221,17 +225,16 @@ def test_find_other_files(test_setup, test_extensions):
         ),
     ],
 )  # Tests each filetype indiviually and then collectively
-def test_copy_images(test_setup, test_extensions, expected_result):
-    """Test that the tool can copy the unsorted files in the test assets directory
-    when the user selects this option.
+def test_copy_images(test_setup, test_extensions, expected_result) -> None:
+    """Test that the tool can copy the unsorted files in the test assets directory.
+
+    When the user selects this option.
     """
     # Expand setup
     tmp_src, tmp_dst, sorter = test_setup
 
     # Add the tmp directory to the ground truths
-    expected_result = [
-        os.path.abspath(os.path.join(tmp_dst, path)) for path in expected_result
-    ]
+    expected_result = [os.path.abspath(os.path.join(tmp_dst, path)) for path in expected_result]
 
     # Copy test assets to a tmp_path
     for asset in MIXED_TEST_ASSETS:
@@ -287,19 +290,16 @@ def test_copy_images(test_setup, test_extensions, expected_result):
         ),
     ],
 )
-def test_rename_duplicates_images(
-    test_setup, test_extensions, expected_result, test_assets
-):
-    """Test that the tool can rename duplicates in the test assets directory
-    when the user selects this option.
+def test_rename_duplicates_images(test_setup, test_extensions, expected_result, test_assets) -> None:
+    """Test that the tool can rename duplicates in the test assets directory.
+
+    When the user selects this option.
     """
     # Expand test setup
     tmp_src, tmp_dst, sorter = test_setup
 
     # Add the tmp directory to the ground truths
-    expected_result = [
-        os.path.abspath(os.path.join(tmp_dst, path)) for path in expected_result
-    ]
+    expected_result = [os.path.abspath(os.path.join(tmp_dst, path)) for path in expected_result]
 
     # Copy test assets to a tmp_path
     for asset in test_assets:

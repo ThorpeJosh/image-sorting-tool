@@ -1,4 +1,8 @@
-"""Image-sorting-tool
-"""
+"""Image-sorting-tool."""
 
-__version__ = "1.2.0.dev"
+from importlib.metadata import PackageNotFoundError, version
+
+try:
+    __version__ = version("image-sorting-tool")
+except PackageNotFoundError:
+    __version__ = "unknown"
