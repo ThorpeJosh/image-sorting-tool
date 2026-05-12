@@ -33,8 +33,10 @@ exclude = ["image_sorting_tool.tests*"]
 "image_sorting_tool" = ["tests/*", "tests/**/*"]
 
 [build-system]
-requires = ["setuptools", "wheel", "setuptools-scm"]
+requires = ["setuptools>=80", "setuptools-scm>=10"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
 
 [tool.ruff]
 line-length = 120
@@ -65,4 +67,3 @@ preview = false
 docstring-code-format = true
 line-ending = "lf"  # Unix \n line ending.
 
-[tool.setuptools_scm]
